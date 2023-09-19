@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/login.css">
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
+</head>
+
+<body>
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+            <h1>Grocery</h1>
+        </div>
+        <div class="container-fluid">
+            <ul class="nav nav-underline">
+                <li class="nav-item">
+                    <a class='nav-link' href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">User Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/manager_login">Manager Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!--For error message-->
+    {% if message %}
+        <br>
+	    <p style="text-align: center; color: {{ message_color }};">{{ message }}</p>
+    {% endif %}
+        <!--For login-->
+    <hr><br>
+    <form class="rounded-5 mt-1 border border-2 border-primary-subtle position-absolute login" method="POST">
+        <h3>Manager Login</h3><br>
+        <div class="row mb-3">
+            <label for="email" class="col-sm-2 col-form-label">Email</label>
+            <div class="col-sm-10">
+                <input type="email" class="form-control" name="email" required>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" name="inputPassword" required>
+            </div>
+        </div>
+        <br>
+        <br>
+        <button class="btn btn-outline-primary" type="submit" style="margin-left: 43%;">Login</button>
+        <br><br>
+        <div style="font-size: 15px;">
+            Didn't have an account? <a href="manager_signup">SignUp</a>
+        </div>
+    </form>
+
+</body>
+
+</html>

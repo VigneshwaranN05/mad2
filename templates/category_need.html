@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Category</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+</head>
+
+<body>
+  <nav class="navbar bg-body-tertiary sticky-top">
+    <div class="container-fluid">
+      <h1>Grocery</h1>
+      <!--Search Box-->
+      <form class="form-inline icon-input" role="search" action="/search" method="POST">
+        <input class="form-control" type="text" placeholder="Search " aria-label="Search" name="query">
+      </form>
+      <ul class="nav-item nav">
+        {% if not signed %}
+          <a class="nav-link" href="/signup">Signup </a><a class="nav-link" href="/login">Login</a>
+        {% else %}
+          <a class='nav-link'>{{ username }}</a>
+          <a class='nav-link' href='/logout'>Logout</a>
+        {% endif %}
+      </ul>
+    </div>
+    <div class="container-fluid">
+      <ul class="nav nav-underline">
+        <li class="nav-item">
+          <a class="nav-link " aria-current="page" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/category">Category</a>
+        </li>
+        {% if not ismanager %}
+        <li class="nav-item">
+          <a class="nav-link" href="/cart">My Cart</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/history">History</a>
+        </li>
+          {% else %}
+        <li class="nav-item">
+          <a class="nav-link disabled" href="/cart">My Cart</a>
+        </li>
+        {% endif %}
+        {% if ismanager %}
+        <li class="nav-item">
+          <a class="nav-link" href="/store">My Store</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/analytics">Analytics</a>
+	      </li>
+        {% endif %}
+	</li>
+      </ul>
+    </div>
+  </nav>
+  {% if message%}
+    <p style="text-align: center ; color: {{ message_color }}; font-size: 16px">{{message}}</p>
+  {% endif %}
+  <br>
+  
+    <div class="container-fluid">
+    <div class="row row-cols-1 row-cols-md4 g-4"> 
+    <div class="col-3 col-md-2">
+      <nav id="navbar-example3" class="h-100 flex-column align-items-start p-auto border-end">
+        {% for category in unique_categories %}
+        <nav class="nav nav-pills flex-column">
+          {% if category_need == category %}
+            <a class="nav-link active" href="/category_need/{{category}}" style="white-space: nowrap; overflow: hidden; text-overflow: clip; max-width: 100%;">{{category}}</a>
+            {% else %}
+            <a class="nav-link" href="/category_need/{{category}}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">{{category}}</a>
+          {% endif %}
+        </nav>
+        {% endfor %}
+        </nav>
+    </div>
+    <div class='col-6 col-md-10'>
+     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      {% for product in product_need %}
+        <div class="col">
+          <div class="card h-100" style="width: 18rem;  box-shadow: 5px 5px 5px 5px grey;">
+            <img src="../static/products/{{product.id}}.png" class="rounded m-2" style="width:17rem ; height: 12rem;" alt="...">
+             <div class="card-body">
+              <h5 class="card-title" style="color : dodgerblue"><b>{{product.name}}</b></h5>
+              <b class="card-title">Owner ID: {{product.owner}}</b><br>
+              {% if product.stock > 0 %}
+                  <b class="card-title">In Stock : {{product.stock}}</b>
+                  <b class="card-text">{{product.unit}}</b><br>
+                  {% else %}
+                  <b class="card-title" style="color: red; font-size: large;">Out of Stock!</b><br>
+              {% endif %}
+              {% if product.expiry_date >= today %}
+              <b class="card-text">Expiry Date : {{product.expiry_date}}</b><p>(yyyy-mm-dd)</p>
+              {% else %}
+              <b class="card-text" style="color: red; font-size: large;">Expired!</b><br>
+              {% endif %}
+              <b class="card-text">Price : ₹</b>
+              <b class="card-text">{{product.price}} / {{product.unit}}</b>
+              {% if signed and not ismanager and product.expiry_date >= today %}
+              <form method="POST">
+              <hr>
+                <div class="input-group mb-3">
+                      <input type="number" type="text" class="form-control" placeholder="Quantity Need" name="count" min='1' max="{{product.stock}}" required>
+                  <button class="btn btn-outline-primary" type="submit" id="button-addon2" name="product" value="{{product.id}}">Add to Cart</button>
+                </div>
+              </form>
+              {% endif %}
+            </div>
+         
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+    <div>
+</body>
+
+</html>

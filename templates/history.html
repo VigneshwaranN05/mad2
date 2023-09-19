@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+</head>
+
+<body>
+  <nav class="navbar bg-body-tertiary sticky-top">
+    <div class="container-fluid">
+      <h1>Grocery</h1>
+      <!--Search Box-->
+      <form class="form-inline icon-input" role="search" action="/search" method="POST">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+          viewBox="0 0 16 16">
+          <path
+            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+        </svg>
+        <input class="form-control" type="text" placeholder="Search " aria-label="Search" name="query">
+      </form>
+      <ul class="nav-item nav">
+        {% if not signed %}
+          <a class="nav-link" href="/signup">Signup </a><a class="nav-link" href="/login">Login</a>
+        {% else %}
+          <a class='nav-link'>{{ username }}</a>
+          <a class='nav-link' href='/logout'>Logout</a>
+        {% endif %}
+      </ul>
+    </div>
+    <div class="container-fluid">
+      <ul class="nav nav-underline">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="category">Category</a>
+        </li>
+        {% if not ismanager %}
+        <li class="nav-item">
+          <a class="nav-link " href="/cart">My Cart</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/history">History</a>
+        </li>
+          {% else %}
+        <li class="nav-item">
+          <a class="nav-link disabled" href="/cart">My Cart</a>
+        </li>
+        {% endif %}
+        {% if ismanager %}
+        <li class="nav-item">
+          <a class="nav-link" href="/store">My Store</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/analytics">Analytics</a>
+	      </li>
+        {% endif %}
+	</li>
+      </ul>
+    </div>
+  </nav>
+  {% if message %}
+  <p style="color : {{message_color}}">{{message}}</p>
+  {% endif %}
+  <br><br>
+  <div class="container-fluid">
+  <h3>Your History</h3><hr>
+  <table class="table table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>Date</th>
+        <th>Product</th>
+        <th>Owner ID</th>
+        <th>Quantity</th>
+        <th>Paid</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for product in history%}
+      <tr>
+        <td>{{product.date_added}}</td>
+        <td><span>{{product.product}}</span></td>
+        <td>{{product.owner}}</td>
+        <td>{{product.count}} {{product.unit}}</td>
+        <td>{{ product.count|int * product.price|int }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </body>
+
+</html>

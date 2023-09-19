@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Cart</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+</head>
+
+<body>
+  <nav class="navbar bg-body-tertiary sticky-top">
+    <div class="container-fluid">
+      <h1>Grocery</h1>
+      <!--Search Box-->
+      <form class="form-inline icon-input" role="search" action="/search" method="POST">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+          viewBox="0 0 16 16">
+          <path
+            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+        </svg>
+        <input class="form-control" type="text" placeholder="Search " aria-label="Search" name="query">
+      </form>
+      <ul class="nav-item nav">
+        {% if not signed %}
+          <a class="nav-link" href="/signup">Signup </a><a class="nav-link" href="/login">Login</a>
+        {% else %}
+          <a class='nav-link'>{{ username }}</a>
+          <a class='nav-link' href='/logout'>Logout</a>
+        {% endif %}
+      </ul>
+    </div>
+    <div class="container-fluid">
+      <ul class="nav nav-underline">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="category">Category</a>
+        </li>
+        {% if not ismanager %}
+        <li class="nav-item">
+          <a class="nav-link active" href="/cart">My Cart</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/history">History</a>
+        </li>
+          {% else %}
+        <li class="nav-item">
+          <a class="nav-link disabled" href="/cart">My Cart</a>
+        </li>
+        {% endif %}
+        {% if ismanager  %}
+        <li class="nav-item">
+          <a class="nav-link" href="/store">My Store</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/analytics">Analytics</a>
+	      </li>
+        {% endif %}
+	</li>
+      </ul>
+    </div>
+  </nav>
+  {% if message %}
+  <p style="color : {{message_color}}">{{message}}</p>
+  {% endif %}
+  <br><br>
+  <div class="container-fluid">
+  <h3>Shopping cart</h3><hr>
+  <table class="table table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>Product</th>
+        <th>Owner ID</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for product , count in products%}
+      <tr>
+        <td><img src="../static/products/{{product.id}}.png" alt="Item 3" width="50" height="50" class="mr-3">
+          <span>{{product.name}}</span></td>
+        <td>{{product.owner}}</td>
+        <td>{{count}} {{product.unit}}</td>
+        <td>{{ count|int * product.price|int }}</td>
+        <td><form method="POST">
+          <button type="submit" class="btn btn-danger btn-sm" name="remove" value="{{product.id}}">Remove</button>
+        </form></td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <th colspan="3" class="table-active" style="text-align: center;">Total</th>
+        <td >₹ {{total}}</td>
+        <td><form method="POST">
+          <button type="submit" class="btn btn-primary btn-sm" name="checkout" value="true">Checkout</button>
+        </form></td>
+      </tr>
+      </tbody>
+    </table>
+    </div>
+  </body>
+
+</html>
