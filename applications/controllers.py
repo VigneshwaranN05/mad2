@@ -244,9 +244,9 @@ def manager_signup():
         message_color = session.pop('message_color',None)
         return render_template('manager_signup.html',message=message , message_color = message_color)
     elif request.method == 'POST':
-        manager_name = request.form['inputName']
-        manager_email = request.form['email'] 
-        password = request.form['inputPassword']
+        manager_name = request.form['manager-name']
+        manager_email = request.form['manager-email'] 
+        password = request.form['manager-password']
         password = passhash.hash(password)
         
         manager_exist= Manager.query.filter_by(manager_email = manager_email).first()
@@ -257,7 +257,7 @@ def manager_signup():
 
             session['message'] = "Acccount created successfully!!"
             session['message_color'] = 'green'
-            return redirect(url_for('manager_login'))
+            return redirect(url_for('user_login'))
         else:
             session['message'] = "Eamil already exist"
             session['message_color']  = 'orangered'
@@ -270,9 +270,9 @@ def signup():
         message_color = session.pop('message_color',None)
         return render_template('signup.html',message=message,message_color=message_color)
     elif request.method == 'POST':
-        username = request.form['inputName']
+        username = request.form['username']
         email = request.form['email']
-        password=request.form['inputPassword']
+        password=request.form['password']
         password = passhash.hash(password)
         user_exist = User.query.filter_by(email=email).first()
         if user_exist is None:        
@@ -296,8 +296,8 @@ def manager_login():
         return render_template('manager_login.html',message=message , message_color=message_color)
     
     elif request.method == 'POST':
-        email = request.form['email']
-        password = request.form['inputPassword']
+        email = request.form['manager-email']
+        password = request.form['manager-password']
         manager = Manager.query.filter_by(manager_email = email).first()
         if manager is None:
             session['message'] = "Invalid Email"
@@ -322,7 +322,7 @@ def user_login():
     
     elif request.method == 'POST':
         email = request.form['email']
-        password = request.form['inputPassword']
+        password = request.form['password']
         user = User.query.filter_by(email= email).first()
         if user is None:
             session['message'] = "Email not found"

@@ -4,12 +4,12 @@
   box-sizing : border-box;
 }
 body {
-  background : white;
+  background :  #eceaff;
   font-family : Sans-Serif;
 }
 
 nav {
-  background :   #f2f2f2;;
+  background : white ;
   display : flex;
   flex-wrap : wrap ;
   align-items : center;
@@ -68,7 +68,7 @@ nav .nav-buttons li {
 }
 
 nav .nav-buttons a{
-  padding : 5px 6px;
+  padding : 10px 15px;
   font-size : 16px;
   text-decoration : none;
   user-select : none;
@@ -94,8 +94,9 @@ nav .nav-buttons a:hover {
 }
 
 nav .nav-buttons svg {
-  width : 20px;
-  height : 20px;
+  width : 25px;
+  height : 25px;
+  margin-top : 5px;
   margin-right : 3px;
   transition : transform .2s;
   cursor : pointer;
@@ -104,6 +105,17 @@ nav .nav-buttons svg {
 
 nav .nav-buttons svg:hover {
    transform: scale(0.75);
+}
+
+nav .nav-buttons  img {
+  top : 2px;
+ user-select: none;
+  cursor: pointer;
+  transition : transform .4s; 
+}
+
+nav .nav-buttons img:hover {
+  transform:  scale(0.8);
 }
 nav .menu-icon {
   display : none;
@@ -119,7 +131,7 @@ nav .menu-icon {
 
 .search-bar.active {
     display: block;
-    right : 188px;
+    right : 240px;
     animation : slideIn 0.3s ease ;
 }
 
@@ -144,10 +156,10 @@ nav .menu-icon {
         right : 175px; /* Start above the screen */
     }
     100% {
-        right : 188px; /* End at the desired position */
+        right : 240px; /* End at the desired position */
     }
 }
-@media screen and (max-width : 768px)
+@media screen and (max-width : 830px)
 {
 
   nav .menu-icon img {
@@ -171,10 +183,10 @@ nav .menu-icon {
     transition : 0.5s ease;
     position : fixed;
     z-index : 99;
-    top : 70px;
+    top : 72px;
     width : 200px;
     height : 100%;
-    background : #EDEDED;
+    background : white;
     display : inline-block;
     padding : 10px;
     border-radius: 0px 10px 10px 10px;

@@ -1,14 +1,14 @@
-let signup = document.querySelector(".signup");
-let signup_manager = document.querySelector(".signup_manager");
+let login = document.querySelector(".login");
+let login_manager = document.querySelector(".login_manager");
 let slider = document.querySelector(".slider");
 let formSection = document.querySelector(".form-section");
 let backBtn = document.querySelector('.backbtn'); 
-signup_manager.addEventListener("click", () => {
+login_manager.addEventListener("click", () => {
     slider.classList.add("moveslider");
     formSection.classList.add("form-section-move");
 });
  
-signup.addEventListener("click", () => {
+login.addEventListener("click", () => {
     slider.classList.remove("moveslider");
     formSection.classList.remove("form-section-move");
 });

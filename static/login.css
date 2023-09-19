@@ -13,11 +13,11 @@ body {
     align-items: center;
     flex-direction: column;
     gap: 30px;
-    background-color: #eceaff;
+    background-color: #eceaff;;
 }
  
 nav {
-     background :   white;
+     background :  white ;
     display : flex;
     flex-wrap : wrap ;
     width: 100%;
@@ -82,8 +82,8 @@ nav img:hover {
     cursor: pointer;
 }
  
-.signup_manager,
-.signup {
+.login_manager,
+.login {
     font-size: 22px;
     border: none;
     outline: none;
@@ -123,7 +123,7 @@ nav img:hover {
     left: -500px;
 }
  
-.signup-box {
+.login-box {
     height: 100%;
     width: 500px;
     display: flex;
@@ -133,7 +133,7 @@ nav img:hover {
     padding: 0px 40px;
 }
  
-.signup-box {
+.login-box {
     gap: 20px;
 }
  
@@ -174,8 +174,15 @@ nav img:hover {
     transition: background-color 500ms linear;
 }
 
-
-  nav .nav-buttons a{
+.message {
+    border : 2px solid black;
+    background-color: white; 
+    border-radius: 20px;
+    padding :  5px 10px;
+    margin-top: 0;
+    margin-bottom : 0;
+}
+nav .nav-buttons a{
     position: absolute;
     top : 10px;
     right : 10px;
@@ -203,15 +210,7 @@ nav img:hover {
       -ms-transition: background-color 800ms linear;
       transition: background-color 800ms linear;
   }
-  
-.message {
-    border : 2px solid black;
-    background-color: white; 
-    border-radius: 20px;
-    padding :  5px 10px;
-    margin-top: 0;
-    margin-bottom : 0;
-}
+
 /* For Responsiveness of the page */
 @media screen and (max-width: 650px) {
     .container {
@@ -229,8 +228,8 @@ nav img:hover {
         margin: 20px auto;
     }
  
-    .signup_manager,
-    .signup {
+    .login_manager,
+    .login {
         font-size: 19px;
     }
  
@@ -253,7 +252,7 @@ nav img:hover {
         left: -300px;
     }
  
-    .signup-box {
+    .login-box {
         height: 100%;
         width: 300px;
     }
@@ -291,8 +290,8 @@ nav img:hover {
         margin: 20px auto;
     }
  
-    .signup_manager,
-    .signup {
+    .login_manager,
+    .login {
         font-size: 19px;
     }
  
@@ -315,7 +314,7 @@ nav img:hover {
         left: -250px;
     }
  
-    .signup-box {
+    .login-box {
         height: 100%;
         width: 250px;
     }
