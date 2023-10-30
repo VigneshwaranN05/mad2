@@ -1,7 +1,6 @@
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
     font-family: Sans-Serif;
 }
  
@@ -21,6 +20,9 @@ nav {
     display : flex;
     flex-wrap : wrap ;
     width: 100%;
+    margin : 0px;
+    left : 0px;
+    right : 0px;
     display: flex;
     height : 70px;
     top : 0px;
@@ -28,7 +30,6 @@ nav {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
     padding : 0 10px;
   box-shadow : 0px 3px 5px skyblue;
 
@@ -56,11 +57,12 @@ nav .logo {
     position: relative;
     border-radius : 20px;
     overflow: hidden;
+    overflow-y : auto;
 }
 
 nav img {
 	height :30px;
-	left : 40px;
+	left : 10px;
 	position : absolute;
 	margin-top:15px;
     cursor: pointer;
@@ -101,7 +103,7 @@ nav img:hover {
             skyblue);
     position: absolute;
     top: 20px;
-    left: 125px;
+    left: 123px;
     transition: all 0.5s ease-in-out;
 }
  
@@ -132,7 +134,9 @@ nav img:hover {
     justify-content: center;
     padding: 0px 40px;
 }
- 
+.login_manager {
+	width : 70px;
+}
 .login-box {
     gap: 20px;
 }
@@ -225,12 +229,16 @@ nav .nav-buttons a{
     .btn {
         height: 50px;
         width: 200px;
-        margin: 20px auto;
+        margin: 20px 38px;
     }
  
     .login_manager,
     .login {
         font-size: 19px;
+    }
+
+    .login_manager {
+	    width : 60px;
     }
  
     .slider {

@@ -4,7 +4,7 @@
   box-sizing : border-box;
 }
 body {
-  background :  #eceaff;
+  background :  #ecefff;
   font-family : Sans-Serif;
 }
 
@@ -26,6 +26,7 @@ nav .logo {
   font-size : 30px;
   font-weight : 600;
   letter-spacing : -1px;
+  margin : 0px;
 }
 
 nav .nav-items{
@@ -42,7 +43,7 @@ nav  .nav-items li a {
   user-select : none;
   font-weight : 800;
   text-decoration : none;
-  transition : color 0.5s ease;
+  transition : all 0.3s ease;
 }
 
 nav .nav-items li a.active {
@@ -55,7 +56,6 @@ nav .nav-items li a:hover{
           -webkit-transition: color 500ms linear;
     -ms-transition: color 500ms linear;
     transition: color 500ms linear;
-
   
 }
 nav .nav-buttons {
@@ -69,8 +69,9 @@ nav .nav-buttons li {
 
 nav .nav-buttons a{
   padding : 10px 15px;
-  font-size : 16px;
+  font-size : 18px;
   text-decoration : none;
+  bottom : 10px;
   user-select : none;
   font-weight : 900;
   color : black;
@@ -94,9 +95,12 @@ nav .nav-buttons a:hover {
 }
 
 nav .nav-buttons svg {
+  position : absolute;
   width : 25px;
   height : 25px;
-  margin-top : 5px;
+  right : 90px;
+  top : 10px;
+  margin-top : 10px;
   margin-right : 3px;
   transition : transform .2s;
   cursor : pointer;
@@ -119,20 +123,27 @@ nav .nav-buttons img:hover {
 }
 nav .menu-icon {
   display : none;
+  user-select : none;
 }
 
-
+nav .filter{
+	position : absolute;
+	right : 55px;
+	top : 20px;
+	margin-right : 5px;
+	margin-left : 5px;
+}
 .search-bar {
     display: none;
-    position: fixed;
+    position: absolute;
     height: 70px;
-    top: 20px;
+    top: 15px;
 }
 
 .search-bar.active {
     display: block;
-    right : 240px;
-    animation : slideIn 0.3s ease ;
+    right : 120px;
+    animation : slideIn 0.5s ease ;
 }
 
 .search-input {
@@ -151,23 +162,162 @@ nav .menu-icon {
   display : none;
 }
 
+.profile {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  width: auto;
+  box-shadow: 0px 8px 16px 0px skyblue;
+  z-index: 1;
+  right: 5px; 
+  top: 60px; 
+  border-radius: 10px; 
+  text-align: center; 
+  padding : 20px 30px; 
+  animation : dropdown 0.3s ease;
+}
+
+.dropdown-content a {
+  padding: 12px 5px; 
+  text-decoration: none;
+  color: black;
+  display : block;
+  transition: background-color 0.3s;
+  margin-bottom : 4px;
+}
+
+.dropdown-content b {
+	font-size: 18px;
+}
+.dropdown-content a:hover {
+  background-color: #f2f2f2;
+}
+
+.card-container {
+	top : 70px;
+	margin-top : 20px;
+	display : grid;
+	grid-template-columns : repeat(auto-fill , 300px);
+	gap : 30px;
+	justify-content: center; /* Center horizontally */
+  align-items: center;
+}
+.card {
+ 	box-shadow: 10px 10px 10px -4px skyblue;
+	max-width : 300px;
+	padding : 10px 10px 0px 10px;
+	height : 100%;
+	display : flex;
+	flex-direction : column;
+	border-radius : 20px;
+	font-weight : 600;
+	user-select: none;
+}
+.card h3{
+	font-weight : 900;
+	color : purple;
+	text-align : center;
+}
+
+.card form{
+	margin : 0;
+	text-align : center;
+	margin-bottom : 0px;
+}
+.card button {
+padding : 8px 10px;
+  user-select : none;
+  color : black;
+  margin-bottom : 0px;
+  margin-top : 5px;
+  background-color: skyblue;
+  border : none ;
+  border-radius : 20px;
+  cursor : pointer;
+        -webkit-transition: background-color 300ms linear;
+    -ms-transition: background-color 300ms linear;
+    transition: background-color 300ms linear;
+
+}
+
+.card button:hover{
+	background-color : black;
+        color : white;
+        -webkit-transition: background-color 800ms linear;
+    -ms-transition: background-color 800ms linear;
+    transition: background-color 800ms linear;
+
+}
+.card .image {
+	border-radius : 10px;
+	margin-bottom : 20px;
+	height : 150px;
+	width : 100%;
+	object-fit : cover;
+	border-color : black;
+}
+
+.card .card-items{
+	margin : 0px;
+}
+.card input {
+	width : 90%;
+	border: solid skyblue;
+	border-radius :10px;
+	padding : 4px ;
+}
 @keyframes slideIn {
     0% {
-        right : 175px; /* Start above the screen */
+        right : 80px; 
     }
     100% {
-        right : 240px; /* End at the desired position */
+        right : 120px; 
     }
 }
-@media screen and (max-width : 830px)
-{
 
+@keyframes dropdown {
+	0% {
+		top : 50px;
+	}
+	100% {
+		top : 60px;
+	}
+}
+@media screen and (max-width : 830px) {
+  nav {
+	  margin: 0px;
+	  padding : 0px;
+  }
+  nav .nav-buttons {
+  	padding : 0px;
+  }
+
+  nav .logo {
+  	position : absolute;
+	top : 10px;
+      left : 40px;	
+}
+  nav .nav-buttons svg {
+  	margin : 0px;
+	top : 20px;
+
+  }
+  nav .nav-buttons li a {
+	  padding : 6px 6px;
+  }
   nav .menu-icon img {
+    position : absolute;
+    top : 20px;
     width : 30px;
     height : 30px;
     cursor : pointer;
-    margin-top : 5px;
-    padding : 0 1;
+    margin-left : 3px;
     border-radius : 50%;
     transition : border 0.3s ease ;
   }
@@ -209,4 +359,9 @@ nav .menu-icon {
     margin : 10px 30px;
   }
 
-} 
+  nav .filter {
+	  margin-right : 3px;
+	  margin-left : 3px;
+	  right : 45px;
+  }
+}

@@ -1,50 +1,98 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Home</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel='stylesheet' href="../static/style.css">
-  </head>
-  <body>
-    <nav>
-      <div class='menu-icon'><img src='../static/images/menu.png'></div>
-      <div class='logo'>Grocery</div>
-      <div class='nav-items'>
-        <li><a href='/home' class='active'>Home</a></li>
-        <li><a href='/category'>Category</a></li>
-	{% if not ismanager %}
-        <li><a href='/cart'>My Cart</a></li>
-	{% else %}
-	<li><a href='/store'>Store</a></li>
-	{% endif %}
-        <li><a href='/history'>History</a></li>
-	{% if ismanager %}
-        <li><a href='/analytics'>Analytics</a></li>
-	{% endif %}
-      </div>
-      <div class='nav-buttons'>
-        <li class='search-bar'>
-          <input type='text' class='search-input' placeholder='Search...'>
-        </li>
-        <li class='search-container'><svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+
+<head>
+  <title>Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel='stylesheet' href="../static/style.css">
+</head>
+
+<body>
+  <nav class='sticky-top'>
+    <div class='menu-icon'><img src='../static/images/menu.png'></div>
+    <div class='logo'>Grocery</div>
+    <div class='nav-items'>
+      <li><a href='/home' class='active'>Home</a></li>
+      <li><a href='/category'>Category</a></li>
+      {% if not ismanager %}
+      <li><a href='/cart'>My Cart</a></li>
+      {% else %}
+      <li><a href='/store'>Store</a></li>
+      {% endif %}
+      <li><a href='/history'>History</a></li>
+      {% if ismanager %}
+      <li><a href='/analytics'>Analytics</a></li>
+      {% endif %}
+    </div>
+    <div class='nav-buttons'>
+      <li class='search-bar'>
+        <input type='text' class='search-input' placeholder='Search...'>
+      </li>
+      <li class='search-container'>
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
           viewBox="0 0 16 16">
           <path
             d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
         </svg>
-<svg class='close-icon' xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 50 50">
-<path d="M 7.71875 6.28125 L 6.28125 7.71875 L 23.5625 25 L 6.28125 42.28125 L 7.71875 43.71875 L 25 26.4375 L 42.28125 43.71875 L 43.71875 42.28125 L 26.4375 25 L 43.71875 7.71875 L 42.28125 6.28125 L 25 23.5625 Z"></path>
-</svg>
-        </li>
-        {% if signed %}
-        <li class="profile"><img src='../static/images/user.svg'></li>
-	<li><a href='logout'>Logout</a></li>
-        {% else %}
-        <li><a href='signup'>SignUp</a></li>
-	<li> <a href='login'>Login</a></li>
-        {% endif %}
-      </div>
-    </nav>
-  </body>
-<script src="/static/scripts/nav.js"></script>
+        <svg class='close-icon' xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100"
+          viewBox="0 0 50 50">
+          <path
+            d="M 7.71875 6.28125 L 6.28125 7.71875 L 23.5625 25 L 6.28125 42.28125 L 7.71875 43.71875 L 25 26.4375 L 42.28125 43.71875 L 43.71875 42.28125 L 26.4375 25 L 43.71875 7.71875 L 42.28125 6.28125 L 25 23.5625 Z"></path>
+        </svg>
+      </li>
+      <li class='filter'>
+	      <img src='../static/images/filter.svg' id='filter'>
+	      <div class="dropdown-content" id="filter-dropdown">
+		      <form method="post">
+
+		      </form>
+	      </div>
+      </li>
+      <li class="profile">
+        <img src='../static/images/user.svg' id="profile-dropdown-trigger">
+        <div class="dropdown-content" id="profile-dropdown">
+      	{% if signed %}
+	<b>{{username}}</b><br><br>
+          <a href='logout'>Logout</a>
+      {% else %}
+      <a href='signup'>SignUp</a><br>
+       <a href='login'>Login</a>
+      {% endif %}
+        </div>
+	</li>
+    </div>
+  </nav>
+  <div class='card-container'>
+  {% for product in products %}
+  <div class='card'>
+	  <img class='image' src='../static/products/{{product.id}}.png'>
+	  <h3>{{product.name}}</h3>
+	  <p class='card-items'>Price : {{product.price}} per {{product.unit}}</p>
+	  {% if product.stock > 0 %}
+	  <p class='card-items'>Stock : {{product.stock}} {{product.unit}}</p>
+	  {% else %}
+	  <p class='card-items'>Out of Stock!!!</p>
+	  {% endif %}
+	  <p class='card-items'>Manger ID: {{product.owner}}</p>
+	  {% if product.expiry_date >= today %}
+	  <p class='card-items'>Expire Date : {{product.expiry_date}}<br>(yyyy-mm-dd) </p>
+	  <hr>
+	  	{% if signed and not ismanager %}
+	  	<form method="POST">
+			  <p><input type='number'name='count' min='1' max="100" placeholder='Qunatity'><br>
+		  	<button>Add to cart</button></p>
+	  	</form>
+	  	{% endif %}
+	  {% else %}
+	  <p class='card-items'>Expired!!!</p>
+	  <hr>
+	  {% endif %}
+  </div>
+  {% endfor %}
+  </div>
+  <script src="/static/scripts/nav.js"></script>
+</body>
+
 </html>
+

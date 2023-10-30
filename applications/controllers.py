@@ -290,23 +290,18 @@ def signup():
 
 @app.route('/manager_login',methods=['GET','POST'])
 def manager_login():
-    if request.method == 'GET':
-        message = session.pop('message',None)
-        message_color = session.pop('message_color',None)
-        return render_template('manager_login.html',message=message , message_color=message_color)
-    
-    elif request.method == 'POST':
+    if request.method == 'POST':
         email = request.form['manager-email']
         password = request.form['manager-password']
         manager = Manager.query.filter_by(manager_email = email).first()
         if manager is None:
             session['message'] = "Invalid Email"
             session['message_color'] = 'orangered'
-            return redirect(url_for('manager_login'))
+            return redirect(url_for('user_login'))
         if not passhash.verify(password , manager.password):
             session['message'] = "Wrong Password"
             session['message_color'] = 'orangered'
-            return redirect(url_for('manager_login'))
+            return redirect(url_for('user_login'))
         session['email'] = email
         session['username'] = manager.manager_name
         session['manager'] = True

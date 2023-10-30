@@ -56,11 +56,12 @@ nav .logo {
     position: relative;
     border-radius : 20px;
     overflow: hidden;
+    overflow-y : auto;
 }
 
 nav img {
 	height :30px;
-	left : 40px;
+	left : 20px;
 	position : absolute;
 	margin-top:15px;
     cursor: pointer;
@@ -91,7 +92,9 @@ nav img:hover {
     position: relative;
     cursor: pointer;
 }
- 
+.signup_manager {
+       width : 70px;
+}       
 .slider {
     height: 60px;
     width: 130px;
@@ -127,6 +130,7 @@ nav img:hover {
     height: 100%;
     width: 500px;
     display: flex;
+    top : 90px;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -203,15 +207,18 @@ nav img:hover {
       -ms-transition: background-color 800ms linear;
       transition: background-color 800ms linear;
   }
-  
+
 .message {
     border : 2px solid black;
-    background-color: white; 
+    z-index : 1;
+    position : absolute;
+    top : 80px;
+    margin-bottom : 2px;
+    background-color: white;
     border-radius: 20px;
     padding :  5px 10px;
-    margin-top: 0;
-    margin-bottom : 0;
 }
+
 /* For Responsiveness of the page */
 @media screen and (max-width: 650px) {
     .container {
@@ -234,6 +241,9 @@ nav img:hover {
         font-size: 19px;
     }
  
+    .signup_manger {
+	    width : 50px;
+    }
     .slider {
         height: 50px;
         width: 100px;
@@ -294,6 +304,10 @@ nav img:hover {
     .signup_manager,
     .signup {
         font-size: 19px;
+    }
+    
+    .signup_manager{
+	    width : 60px;
     }
  
     .slider {
