@@ -55,20 +55,21 @@ nav .nav-items li a.active {
 }
 
 .nav-items li a:not(.active):hover{
-	border-bottom : 2px solid black;
-	padding-bottom : 5px;
-	-webkit-transition : padding-bottom 300ms ease;
-	-ms-transition : padding-bottom 300ms ease;
-	transition : padding-bottom 300ms ease-in-out;
+        border-bottom : 2px solid black;
+        padding-bottom : 5px;
+        -webkit-transition : padding-bottom 300ms ease;
+        -ms-transition : padding-bottom 300ms ease;
+        transition : padding-bottom 300ms ease-in-out;
 }
+
 
 nav .nav-items li a:hover{
   color : #222222;
           -webkit-transition: color 500ms linear;
     -ms-transition: color 500ms linear;
     transition: color 500ms linear;
+  
 }
-
 nav .nav-buttons {
   display : flex;
   list-style : none;
@@ -110,7 +111,7 @@ nav .nav-buttons svg {
   position : absolute;
   width : 25px;
   height : 25px;
-  right : 90px;
+  right : 70px;
   top : 10px;
   margin-top : 10px;
   margin-right : 3px;
@@ -138,11 +139,6 @@ nav .menu-icon {
   user-select : none;
 }
 
-nav .filter{
-	position : absolute;
-	right : 55px;
-	top : 20px;
-}
 .search-bar {
     display: none;
     position: absolute;
@@ -152,7 +148,7 @@ nav .filter{
 
 .search-bar.active {
     display: block;
-    right : 120px;
+    right : 100px;
     animation : slideIn 0.5s ease ;
 }
 
@@ -219,45 +215,31 @@ nav .filter{
 	justify-content: center; /* Center horizontally */
   align-items: center;
 }
-
 .card {
-        box-shadow: 10px 10px 10px -4px skyblue;
-        max-width : 300px;
-        padding : 10px 10px 0px 10px;
-        height : 100%;
-        display : flex;
-        flex-direction : column;
-        border-radius : 20px;
-        overflow : hidden;
-        transition : transform 0.3s, box-shadow 0.3s;
-        transform : rotate(0deg);
-        user-select: none;
+ 	box-shadow: 10px 10px 10px -4px skyblue;
+	max-width : 300px;
+	padding : 10px 10px 0px 10px;
+	height : 100%;
+	display : flex;
+	flex-direction : column;
+	border-radius : 20px;
+	overflow : hidden;
+	transition : transform 0.3s, box-shadow 0.3s;
+	transform : rotate(0deg);
+	user-select: none;
 }
 
 .card:hover{
-        transform : translateY(-5px) rotate(0deg);
-        box-shadow : 0 10px 20px black;
-}
-
-
-.card h3{
-	font-weight : 900;
-	color : purple;
-	text-align : center;
-}
-
-
-.card form{
-	margin : 0;
-	text-align : center;
-	margin-bottom : 0px;
+	transform : translateY(-5px) rotate(0deg);
+	box-shadow : 0 10px 20px black;
 }
 .card button {
-padding : 8px 10px;
+  padding : 10px;
   user-select : none;
   color : white;
   margin-bottom : 0px;
   margin-top : 5px;
+  margin-bottom : 10px;
   background-color: black;
   border : solid skyblue ;
   border-radius : 20px;
@@ -279,9 +261,8 @@ padding : 8px 10px;
 .card .image {
 	border-radius : 10px;
 	margin-bottom : 20px;
-	height : 180px;
+	height : 230px;
 	width : 100%;
-	object-fit : cover;
 	border-color : black;
 }
 
@@ -290,6 +271,9 @@ padding : 8px 10px;
 	margin : 0px;
 }
 
+.card .price {
+	font-weight : 500;
+}
 .card input {
 	width : 90%;
 	border: solid skyblue;
@@ -301,7 +285,7 @@ padding : 8px 10px;
         right : 80px; 
     }
     100% {
-        right : 120px; 
+        right : 100px; 
     }
 }
 

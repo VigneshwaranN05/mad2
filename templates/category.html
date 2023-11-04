@@ -1,86 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
-  <link rel="stylesheet" href="/static/style.css">
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <title>Category</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel='stylesheet' href="../static/category.css">
 </head>
-
 <body>
-  <nav class="navbar bg-body-tertiary sticky-top">
-    <div class="container-fluid">
-      <h1>Grocery</h1>
-      <!--Search Box-->
-      <form class="form-inline icon-input" role="search" action="/search" method="POST">
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+  <nav class='sticky-top'>
+    <div class='menu-icon'><img src='../static/images/menu.png'></div>
+    <div class='logo'>Grocery</div>
+    <div class='nav-items'>
+      <li><a href='/' >Home</a></li>
+      <li><a href='/category' class='active'>Category</a></li>
+      {% if not ismanager %}
+      <li><a href='/cart'>My Cart</a></li>
+      {% else %}
+      <li><a href='/store'>Store</a></li>
+      {% endif %}
+      <li><a href='/history'>History</a></li>
+      {% if ismanager %}
+      <li><a href='/analytics'>Analytics</a></li>
+      {% endif %}
+    </div>
+    <div class='nav-buttons'>
+      <li class='search-bar'>
+        <input type='text' class='search-input' placeholder='Search...'>
+      </li>
+      <li class='search-container'>
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
           viewBox="0 0 16 16">
           <path
             d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
         </svg>
-        <input class="form-control" type="text" placeholder="Search" aria-label="Search" name="query">
-      </form>
-      <ul class="nav-item nav">
-        {% if not signed %}
-          <a class="nav-link" href="/signup">Signup </a><a class="nav-link" href="/login">Login</a>
-        {% else %}
-          <a class='nav-link'>{{ username }}</a>
-          <a class='nav-link' href='/logout'>Logout</a>
-        {% endif %}
-      </ul>
-    </div>
-    <div class="container-fluid">
-      <ul class="nav nav-underline">
-        <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="/">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="/category">Category</a>
-        </li>
-        {% if not ismanager %}
-        <li class="nav-item">
-          <a class="nav-link" href="/cart">My Cart</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/history">History</a>
-        </li>
-          {% else %}
-        <li class="nav-item">
-          <a class="nav-link disabled" href="/cart">My Cart</a>
-        </li>
-        {% endif %}
-        {% if ismanager %}
-        <li class="nav-item">
-          <a class="nav-link" href="/store">My Store</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/analytics">Analytics</a>
-	      </li>
-        {% endif %}
-	      </li>
-      </ul>
+        <svg class='close-icon' xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100"
+          viewBox="0 0 50 50">
+          <path
+            d="M 7.71875 6.28125 L 6.28125 7.71875 L 23.5625 25 L 6.28125 42.28125 L 7.71875 43.71875 L 25 26.4375 L 42.28125 43.71875 L 43.71875 42.28125 L 26.4375 25 L 43.71875 7.71875 L 42.28125 6.28125 L 25 23.5625 Z"></path>
+        </svg>
+      </li>
+      <li class="profile">
+        <img src='../static/images/user.svg' id="profile-dropdown-trigger">
+        <div class="dropdown-content" id="profile-dropdown">
+      	{% if signed %}
+	<b>{{username}}</b><br><br>
+          <a href='logout'>Logout</a>
+      {% else %}
+      <a href='signup'>SignUp</a><br>
+       <a href='login'>Login</a>
+      {% endif %}
+        </div>
+	</li>
     </div>
   </nav>
-  <br>
-  <div class="container-fluid">
-      <h3>Categories</h3>
-      <hr>
-      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+
+  <div class="card-container">
       {% for category , product_id in products_by_category.items() %}
-        <div class="col">
-          <div class="card h-100" style="width: 18rem;  box-shadow: 5px 5px 5px 5px grey;">
-            <a href='category_need/{{category}}'><img src="../static/products/{{product_id}}.png" class="rounded m-2" style="width:17rem ; height: 15em;" alt="..."></a>
-            <div class="card-body">
-              <a class="nav-link" href='category_need/{{category}}'><h4 class="card-title">{{category}} </h4></a> 
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-  </div> 
+      <div class='card'>
+      <a href='category_need/{{category}}'><img class='image' src="../static/products/{{product_id}}.png" ></a>
+      <button onclick="navigateToLink('category_need/{{category}}')">{{category}}</button>
+      </div> 
+      {% endfor %}
+ 
+  </div>
+  <script src='/static/scripts/category.js'></script>
 </body>
 
 </html>

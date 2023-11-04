@@ -13,7 +13,7 @@
     <div class='menu-icon'><img src='../static/images/menu.png'></div>
     <div class='logo'>Grocery</div>
     <div class='nav-items'>
-      <li><a href='/home' class='active'>Home</a></li>
+      <li><a href='/' class='active'>Home</a></li>
       <li><a href='/category'>Category</a></li>
       {% if not ismanager %}
       <li><a href='/cart'>My Cart</a></li>
@@ -68,13 +68,12 @@
   <div class='card'>
 	  <img class='image' src='../static/products/{{product.id}}.png'>
 	  <h3>{{product.name}}</h3>
-	  <p class='card-items'>Price : {{product.price}} per {{product.unit}}</p>
+	  <p class='card-items' style='font-weight: bold;'>Price : {{product.price}} per {{product.unit}}</p>
 	  {% if product.stock > 0 %}
 	  <p class='card-items'>Stock : {{product.stock}} {{product.unit}}</p>
 	  {% else %}
 	  <p class='card-items'>Out of Stock!!!</p>
 	  {% endif %}
-	  <p class='card-items'>Manger ID: {{product.owner}}</p>
 	  {% if product.expiry_date >= today %}
 	  <p class='card-items'>Expire Date : {{product.expiry_date}}<br>(yyyy-mm-dd) </p>
 	  <hr>
@@ -91,7 +90,7 @@
   </div>
   {% endfor %}
   </div>
-  <script src="/static/scripts/nav.js"></script>
+  <script src="/static/scripts/home.js"></script>
 </body>
 
 </html>
