@@ -154,28 +154,29 @@ nav img:hover {
     height: 60px;
     width: 150px;
     border-radius: 50px;
-    background-color : skyblue;
+    background-color : black;
+    color : white;
     font-size: 22px;
     border: none;
     margin-bottom : 50px;
     cursor: pointer;
-               -webkit-transition: color 500ms linear;
-    -ms-transition: color 500ms linear;
-    transition: color 500ms linear;
-              -webkit-transition: background-color 500ms linear;
-    -ms-transition: background-color 500ms linear;
-    transition: background-color 500ms linear;
+               -webkit-transition: color 300ms linear;
+    -ms-transition: color 300ms linear;
+    transition: color 300ms linear;
+              -webkit-transition: background-color 300ms linear;
+    -ms-transition: background-color 300ms linear;
+    transition: background-color 300ms linear;
 }
 
 .clkbtn:hover {
-    color : white;
-    background-color: rgba(91, 131, 253, 0.859);
-              -webkit-transition: color 500ms linear;
-    -ms-transition: color 500ms linear;
-    transition: color 500ms linear;
-              -webkit-transition: background-color 500ms linear;
-    -ms-transition: background-color 500ms linear;
-    transition: background-color 500ms linear;
+    color : black;
+    background-color: skyblue;
+              -webkit-transition: color 300ms linear;
+    -ms-transition: color 300ms linear;
+    transition: color 300ms linear;
+              -webkit-transition: background-color 300ms linear;
+    -ms-transition: background-color 300ms linear;
+    transition: background-color 300ms linear;
 }
 
 .message {
@@ -195,8 +196,8 @@ nav .nav-buttons a{
     text-decoration : none;
     user-select : none;
     font-weight : 900;
-    color : black;
-    background-color: skyblue;
+    color : white;
+    background-color: black;
     border : none ;
     padding : 0 10;
     border-radius : 20px;
@@ -208,11 +209,11 @@ nav .nav-buttons a{
   }
   
   nav .nav-buttons a:hover {
-      background-color : black;
-      color : white;
-      -webkit-transition: background-color 800ms linear;
-      -ms-transition: background-color 800ms linear;
-      transition: background-color 800ms linear;
+      background-color : skyblue;
+      color : black;
+      -webkit-transition: background-color 300ms linear;
+      -ms-transition: background-color 300ms linear;
+      transition: background-color 300ms linear;
   }
 
 /* For Responsiveness of the page */

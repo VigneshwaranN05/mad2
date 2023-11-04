@@ -64,18 +64,19 @@ nav .nav-buttons {
 }
 nav .nav-buttons li {
   padding : 0 5px;
-  margin-left : 2px;
+  margin-left : 5px;
 }
 
 nav .nav-buttons a{
   padding : 10px 15px;
   font-size : 18px;
+  margin-left : 4px;
   text-decoration : none;
   bottom : 10px;
   user-select : none;
   font-weight : 900;
-  color : black;
-  background-color: skyblue;
+  color : white;
+  background-color: black;
   border : none ;
   padding : 0 10;
   border-radius : 20px;
@@ -87,11 +88,11 @@ nav .nav-buttons a{
 }
 
 nav .nav-buttons a:hover {
-	background-color : black;
-	color : white;
-	-webkit-transition: background-color 800ms linear;
-    -ms-transition: background-color 800ms linear;
-    transition: background-color 800ms linear;
+	background-color : skyblue;
+	color : black;
+	-webkit-transition: background-color 300ms linear;
+    -ms-transition: background-color 300ms linear;
+    transition: background-color 300ms linear;
 }
 
 nav .nav-buttons svg {
@@ -130,8 +131,6 @@ nav .filter{
 	position : absolute;
 	right : 55px;
 	top : 20px;
-	margin-right : 5px;
-	margin-left : 5px;
 }
 .search-bar {
     display: none;
@@ -233,11 +232,11 @@ nav .filter{
 .card button {
 padding : 8px 10px;
   user-select : none;
-  color : black;
+  color : white;
   margin-bottom : 0px;
   margin-top : 5px;
-  background-color: skyblue;
-  border : none ;
+  background-color: black;
+  border : solid skyblue ;
   border-radius : 20px;
   cursor : pointer;
         -webkit-transition: background-color 300ms linear;
@@ -247,11 +246,11 @@ padding : 8px 10px;
 }
 
 .card button:hover{
-	background-color : black;
-        color : white;
-        -webkit-transition: background-color 800ms linear;
-    -ms-transition: background-color 800ms linear;
-    transition: background-color 800ms linear;
+	background-color : skyblue;
+        color : black;
+        -webkit-transition: background-color 300ms linear;
+    -ms-transition: background-color 300ms linear;
+    transition: background-color 300ms linear;
 
 }
 .card .image {

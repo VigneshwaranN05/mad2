@@ -16,7 +16,9 @@
         <h1 class="logo">Grocery</h1>
     <div class='nav-buttons'><a href="/login">Login</a></div>
     </nav>
-    <p class='message' style="color : red;" >Test</p>
+    {% if message %}
+    <p class='message' style="color : {{message_color}};" >{{message}}</p>
+    {% endif %}
     <!-- container div -->
     <div class="container">
  

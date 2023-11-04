@@ -1,7 +1,6 @@
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
     font-family: Sans-Serif;
 }
  
@@ -13,14 +12,17 @@ body {
     align-items: center;
     flex-direction: column;
     gap: 30px;
-    background-color: #eceaff;
+    background-color: #eceaff;;
 }
  
 nav {
-     background :   white;
+     background :  white ;
     display : flex;
     flex-wrap : wrap ;
     width: 100%;
+    margin : 0px;
+    left : 0px;
+    right : 0px;
     display: flex;
     height : 70px;
     top : 0px;
@@ -28,7 +30,6 @@ nav {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
     padding : 0 10px;
   box-shadow : 0px 3px 5px skyblue;
 
@@ -61,7 +62,7 @@ nav .logo {
 
 nav img {
 	height :30px;
-	left : 20px;
+	left : 10px;
 	position : absolute;
 	margin-top:15px;
     cursor: pointer;
@@ -92,9 +93,7 @@ nav img:hover {
     position: relative;
     cursor: pointer;
 }
-.signup_manager {
-       width : 70px;
-}       
+ 
 .slider {
     height: 60px;
     width: 130px;
@@ -104,7 +103,7 @@ nav img:hover {
             skyblue);
     position: absolute;
     top: 20px;
-    left: 125px;
+    left: 123px;
     transition: all 0.5s ease-in-out;
 }
  
@@ -130,13 +129,14 @@ nav img:hover {
     height: 100%;
     width: 500px;
     display: flex;
-    top : 90px;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 0px 40px;
 }
- 
+.signup_manager {
+	width : 70px;
+}
 .signup-box {
     gap: 20px;
 }
@@ -154,22 +154,23 @@ nav img:hover {
     height: 60px;
     width: 150px;
     border-radius: 50px;
-    background-color : skyblue;
+    background-color : black;
+    color : white;
     font-size: 22px;
     border: none;
     margin-bottom : 50px;
     cursor: pointer;
-               -webkit-transition: color 500ms linear;
-    -ms-transition: color 500ms linear;
-    transition: color 500ms linear;
-              -webkit-transition: background-color 500ms linear;
-    -ms-transition: background-color 500ms linear;
-    transition: background-color 500ms linear;
+               -webkit-transition: color 300ms linear;
+    -ms-transition: color 300ms linear;
+    transition: color 300ms linear;
+              -webkit-transition: background-color 300ms linear;
+    -ms-transition: background-color 300ms linear;
+    transition: background-color 300ms linear;
 }
 
 .clkbtn:hover {
-    color : white;
-    background-color: rgba(91, 131, 253, 0.859);
+    color : black;
+    background-color: skyblue;
               -webkit-transition: color 500ms linear;
     -ms-transition: color 500ms linear;
     transition: color 500ms linear;
@@ -178,8 +179,15 @@ nav img:hover {
     transition: background-color 500ms linear;
 }
 
-
-  nav .nav-buttons a{
+.message {
+    border : 2px solid black;
+    background-color: white; 
+    border-radius: 20px;
+    padding :  5px 10px;
+    margin-top: 0;
+    margin-bottom : 0;
+}
+nav .nav-buttons a{
     position: absolute;
     top : 10px;
     right : 10px;
@@ -188,8 +196,8 @@ nav img:hover {
     text-decoration : none;
     user-select : none;
     font-weight : 900;
-    color : black;
-    background-color: skyblue;
+    color : white;
+    background-color: black;
     border : none ;
     padding : 0 10;
     border-radius : 20px;
@@ -201,23 +209,12 @@ nav img:hover {
   }
   
   nav .nav-buttons a:hover {
-      background-color : black;
-      color : white;
-      -webkit-transition: background-color 800ms linear;
-      -ms-transition: background-color 800ms linear;
-      transition: background-color 800ms linear;
+      background-color : skyblue;
+      color : black;
+      -webkit-transition: background-color 300ms linear;
+      -ms-transition: background-color 300ms linear;
+      transition: background-color 300ms linear;
   }
-
-.message {
-    border : 2px solid black;
-    z-index : 1;
-    position : absolute;
-    top : 80px;
-    margin-bottom : 2px;
-    background-color: white;
-    border-radius: 20px;
-    padding :  5px 10px;
-}
 
 /* For Responsiveness of the page */
 @media screen and (max-width: 650px) {
@@ -233,17 +230,18 @@ nav img:hover {
     .btn {
         height: 50px;
         width: 200px;
-        margin: 20px auto;
+        margin: 20px 38px;
     }
  
     .signup_manager,
     .signup {
         font-size: 19px;
     }
- 
-    .signup_manger {
-	    width : 50px;
+
+    .signup_manager {
+	    width : 60px;
     }
+ 
     .slider {
         height: 50px;
         width: 100px;
@@ -304,10 +302,6 @@ nav img:hover {
     .signup_manager,
     .signup {
         font-size: 19px;
-    }
-    
-    .signup_manager{
-	    width : 60px;
     }
  
     .slider {
