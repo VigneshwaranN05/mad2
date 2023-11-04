@@ -75,7 +75,7 @@ nav .nav-buttons {
 }
 nav .nav-buttons li {
   padding : 0 5px;
-  margin-left : 5px;
+  margin-left : 15px;
 }
 
 nav .nav-buttons a{
@@ -88,7 +88,7 @@ nav .nav-buttons a{
   font-weight : 900;
   color : white;
   background-color: black;
-  border : none ;
+  border : solid 2px skyblue ;
   padding : 0 10;
   border-radius : 20px;
   cursor : pointer;
@@ -242,7 +242,7 @@ nav .filter{
 
 .card h3{
 	font-weight : 900;
-	color : purple;
+	color : black;
 	text-align : center;
 }
 
@@ -259,7 +259,7 @@ padding : 8px 10px;
   margin-bottom : 0px;
   margin-top : 5px;
   background-color: black;
-  border : solid skyblue ;
+  border : solid 2px skyblue ;
   border-radius : 20px;
   cursor : pointer;
         -webkit-transition: background-color 300ms linear;
@@ -292,7 +292,7 @@ padding : 8px 10px;
 
 .card input {
 	width : 90%;
-	border: solid skyblue;
+	border: solid 2px black;
 	border-radius :10px;
 	padding : 4px ;
 }
