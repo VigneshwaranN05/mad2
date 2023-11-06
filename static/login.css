@@ -30,8 +30,7 @@ nav {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding : 0 10px;
-  box-shadow : 0px 3px 5px skyblue;
+   box-shadow : 0px 3px 5px skyblue;
 
 }
  
@@ -99,8 +98,8 @@ nav img:hover {
     width: 130px;
     border-radius: 50px;
     background-image: linear-gradient(to right,
-            skyblue,
-            skyblue);
+            black,
+            black);
     position: absolute;
     top: 20px;
     left: 123px;
@@ -112,7 +111,7 @@ nav img:hover {
 }
  
 .form-section {
-    height: 500px;
+    height: 400px;
     width: 1000px;
     padding: 20px 0;
     display: flex;
@@ -180,12 +179,7 @@ nav img:hover {
 }
 
 .message {
-    border : 2px solid black;
-    background-color: white; 
-    border-radius: 20px;
-    padding :  5px 10px;
-    margin-top: 0;
-    margin-bottom : 0;
+    border : none;
 }
 nav .nav-buttons a{
     position: absolute;
@@ -198,7 +192,7 @@ nav .nav-buttons a{
     font-weight : 900;
     color : white;
     background-color: black;
-    border : none ;
+    border : solid 2px skyblue;
     padding : 0 10;
     border-radius : 20px;
     cursor : pointer;
@@ -219,7 +213,7 @@ nav .nav-buttons a{
 /* For Responsiveness of the page */
 @media screen and (max-width: 650px) {
     .container {
-        height: 600px;
+        height: 500px;
         width: 300px;
     }
  
@@ -253,7 +247,7 @@ nav .nav-buttons a{
     }
  
     .form-section {
-        height: 500px;
+        height: 300px;
         width: 600px;
     }
  
@@ -315,7 +309,7 @@ nav .nav-buttons a{
     }
  
     .form-section {
-        height: 500px;
+        height: 300px;
         width: 500px;
     }
  

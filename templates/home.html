@@ -42,12 +42,33 @@
         </svg>
       </li>
       <li class='filter'>
-	      <img src='../static/images/filter.svg' id='filter'>
-	      <div class="dropdown-content" id="filter-dropdown">
-		      <form method="post">
-
-		      </form>
-	      </div>
+	      <img src='../static/images/filter.svg' id='filter-trigger'>
+      		<form class='filter-options' method="POST">
+			<div class='filter-section'>
+				<div class='radio-group'>
+					<p>Price:</p>
+					<label>
+						<input type='radio' name='price' value='high-to-low'>High to low
+					</label>
+					<label>
+						<input type='radio' name='price' value='low-to-high'>Low to High
+					</label>
+				</div>
+			</div>
+			<hr>
+			<div class='filter-secion'>
+				<p>Date:</p>
+				<div class='radio-group'>
+					<label>
+						<input type='radio' name='date' value='latest' checked>Latest
+					</label>
+					<label>
+						<input type='radio' name='date' value='oldest'> Oldest
+					</label>
+				</div>
+			</div>
+			<button type='button' id='apply-filter'>Apply</button>
+		</form>
       </li>
       <li class="profile">
         <img src='../static/images/user.svg' id="profile-dropdown-trigger">

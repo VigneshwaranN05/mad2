@@ -5,11 +5,15 @@ let formSection = document.querySelector(".form-section");
 let backBtn = document.querySelector('.backbtn'); 
 signup_manager.addEventListener("click", () => {
     slider.classList.add("moveslider");
+    signup_manager.style.color = "white";
+    signup.style.color = 'black';
     formSection.classList.add("form-section-move");
 });
  
 signup.addEventListener("click", () => {
     slider.classList.remove("moveslider");
+    signup.style.color = "white";
+    signup_manager.style.color='black';
     formSection.classList.remove("form-section-move");
 });
 

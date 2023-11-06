@@ -99,11 +99,11 @@ nav img:hover {
     width: 130px;
     border-radius: 50px;
     background-image: linear-gradient(to right,
-            skyblue,
-            skyblue);
+            black,
+            black);
     position: absolute;
     top: 20px;
-    left: 123px;
+    left: 121px;
     transition: all 0.5s ease-in-out;
 }
  
@@ -180,12 +180,11 @@ nav img:hover {
 }
 
 .message {
-    border : 2px solid black;
-    background-color: white; 
-    border-radius: 20px;
-    padding :  5px 10px;
-    margin-top: 0;
-    margin-bottom : 0;
+    border : none;
+    color : red; 
+    width : auto; 
+    font-weight : 600;
+    text-align : center
 }
 nav .nav-buttons a{
     position: absolute;
@@ -198,7 +197,7 @@ nav .nav-buttons a{
     font-weight : 900;
     color : white;
     background-color: black;
-    border : none ;
+    border : solid 2px skyblue ;
     padding : 0 10;
     border-radius : 20px;
     cursor : pointer;

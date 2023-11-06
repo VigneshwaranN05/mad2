@@ -15,6 +15,7 @@ class Manager(db.Model):
     manager_name = db.Column(db.String, nullable=False)
     manager_email = db.Column(db.String,unique=True, nullable = False)
     password=db.Column(db.String, nullable=False)
+    is_admin=db.Column(db.Boolean, default = False , nullable=True)
 
 class Product(db.Model):
     __tablename__ = "product"

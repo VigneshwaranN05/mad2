@@ -33,6 +33,12 @@ document.addEventListener('click', (event) => {
 const profileDropdownTrigger = document.getElementById('profile-dropdown-trigger');
 const profileDropdown = document.getElementById('profile-dropdown');
 
+const filterIcon = document.getElementById('filter-trigger');
+const filterOptions = document.querySelector('.filter-options');
+filterIcon.addEventListener('click', () => {
+	filterOptions.style.display = filterOptions.style.display === 'block' ? 'none' : 'block';
+});
+
 // Toggle the dropdown when the profile image is clicked
 profileDropdownTrigger.addEventListener('click', function() {
   if (profileDropdown.style.display === 'block') {

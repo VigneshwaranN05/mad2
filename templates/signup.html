@@ -16,9 +16,6 @@
         <h1 class="logo">Grocery</h1>
     <div class='nav-buttons'><a href="/login">Login</a></div>
     </nav>
-    {% if message %}
-    <p class='message' style="color : {{message_color}};" >{{message}}</p>
-    {% endif %}
     <!-- container div -->
     <div class="container">
  
@@ -26,16 +23,20 @@
              the login or signup form -->
         <div class="slider"></div>
         <div class="btn">
-            <button class="signup">SignUp</button>
+            <button class="signup" style="color:white;">SignUp</button>
             <button class="signup_manager">Manager</button>
         </div>
- 
+	 
+	{% if message %}
+	<p class='message' style="{{message_color}}" >{{message}}</p>
+	{% endif %}
         <!-- Form section that contains the
              login and the signup form -->
         <div class="form-section">
         <form action="/signup" method="post">  
             <!-- signupform -->
             <div class="signup-box">
+
 		<input type="text" class="name ele" name="username" 
 			placeholder="Your Name" autocomplete="off" required>
                 <input type="email" name="email"

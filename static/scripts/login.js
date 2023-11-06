@@ -5,12 +5,16 @@ let formSection = document.querySelector(".form-section");
 let backBtn = document.querySelector('.backbtn'); 
 login_manager.addEventListener("click", () => {
     slider.classList.add("moveslider");
+    login_manager.style.color='white';
+    login.style.color='black';
     formSection.classList.add("form-section-move");
 });
  
 login.addEventListener("click", () => {
     slider.classList.remove("moveslider");
     formSection.classList.remove("form-section-move");
+    login.style.color='white';
+    login_manager.style.color='black';
 });
 
 backBtn.addEventListener("click" , ()=>{ 
