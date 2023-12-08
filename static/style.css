@@ -4,28 +4,26 @@
   box-sizing : border-box;
 }
 body {
-  background :  #ecefff;
+  background : linear-gradient(to right , #232526 , #414345); 
   font-family : Sans-Serif;
 }
 
 nav {
-  background : white ;
   display : flex;
   flex-wrap : wrap ;
   align-items : center;
   justify-content: space-between;
   height : 70px;
   padding : 0 10px;
-  box-shadow : 0px 3px 5px skyblue;
 
 }
 
 nav .logo {
-  color : black;
+  color : white;
   user-select : none;
+  font-family: 'American Typewriter' , serif;
   font-size : 30px;
   font-weight : 600;
-  letter-spacing : -1px;
   margin : 0px;
 }
 
@@ -38,24 +36,25 @@ nav .nav-items li {
   padding : 0 18px ;
 }
 nav  .nav-items li a {
-  color : #0071A6;
   font-size : 20px;
   user-select : none;
   font-weight : 800;
   text-decoration : none;
   transition : all 0.3s ease;
+  background: linear-gradient(to right, #00c9ff, #92fe9d); 
+  -webkit-text-fill-color: transparent; 
+  -webkit-background-clip: text; 
 }
 
 nav .nav-items li a.active {
-  color : black;
   font-size : 20px;
   font-weight  : 900;
-  border-bottom : 2px solid black;
+  border-bottom : 2px solid white;
   padding-bottom : 5px;
 }
 
 .nav-items li a:not(.active):hover{
-	border-bottom : 2px solid black;
+	border-bottom : 2px solid white;
 	padding-bottom : 5px;
 	-webkit-transition : padding-bottom 300ms ease;
 	-ms-transition : padding-bottom 300ms ease;
@@ -87,23 +86,17 @@ nav .nav-buttons a{
   user-select : none;
   font-weight : 900;
   color : white;
-  background-color: black;
-  border : solid 2px skyblue ;
-  padding : 0 10;
+  background : linear-gradient(black , black) padding-box,  
+        linear-gradient(to right , #00c9ff, #92fe9d) border-box; 
   border-radius : 20px;
+  border : 2px solid transparent;
+  padding : 0 10;
   cursor : pointer;
-        -webkit-transition: background-color 300ms linear;
-    -ms-transition: background-color 300ms linear;
-    transition: background-color 300ms linear;
-
 }
 
 nav .nav-buttons a:hover {
-	background-color : skyblue;
-	color : black;
-	-webkit-transition: background-color 300ms linear;
-    -ms-transition: background-color 300ms linear;
-    transition: background-color 300ms linear;
+  background: linear-gradient(to right , #00c9ff , #92fe9d) padding-box,
+              linear-gradient(to right , #00c9ff , #92fe9d) border-box;
 }
 
 nav .nav-buttons svg {
@@ -145,14 +138,14 @@ nav .filter{
 }
 
 .filter-options {
-	display : none;
+	color : white;
+	background: linear-gradient(to right , #232526 , #414345);
 	position : absolute;
 	top : 60px;
 	right : 0px;
 	width : 250px;
-	background : white;
 	box-shadow : 0px 3px 5px skyblue;
-	padding; 10px;
+	padding : 10px;
 	border-radius : 10px;
 	z-index : 1;
 	animation : dropdown 0.3s ease;
@@ -171,47 +164,84 @@ nav .filter{
 #apply-filter{
 	display : block;
 	margin : 10px auto;
-	background-color : black;
 	color:  white;
-	border : solid 2px skyblue;
-	border-radius : 20px;
+	background : linear-gradient(black , black) padding-box,  
+  linear-gradient(to right , #00c9ff, #92fe9d) border-box; 
+  border-radius : 20px;
+  border : 2px solid transparent;
 	padding : 5px 20px;
 	cursor : pointer;
 	font-weight : 800;
 }
 
 #apply-filter:hover {
-	background-color : skyblue;
-	color : black;
-	transition : background-color 300ms linear;
-}
-.search-bar {
-    display: none;
-    position: absolute;
-    height: 70px;
-    top: 15px;
+	background : linear-gradient(to right , #00c9ff , #92fe9d) padding-box,  
+  linear-gradient(to right , #00c9ff, #92fe9d) border-box; 
 }
 
-.search-bar.active {
-    display: block;
-    right : 125px;
-    animation : slideIn 0.5s ease ;
+[v-cloak]  {
+  display : none;
 }
-
-.search-input {
-    padding  : 5px 7px 5px;
-    font-size: 16px;
-    width : 100%;
-    border-radius: 20px;
-    border : 2px solid skyblue;
-}
-
 .search-icon {
   display : block;
-  fill : black;
 }
-.close-icon {
-  display : none;
+
+.floating-screen-container{
+  position : fixed;
+  top : 90px;
+  left : 0;
+  width : 100%;
+  height : auto;
+  z-index : 2;
+  padding : 10px;
+}
+
+.closeIcon-con{
+  display : flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.floating-screen {
+  padding : 20px;
+  background-color: linear-gradient(to right , #232526 , #414345);
+  border : 2px solid skyblue;
+  border-radius : 15px;
+  box-shadow: 0 0 10px skyblue; 
+  text-align: center;
+}
+
+.floating-screen input {
+  width : 100%;
+  padding : 10px 10px;
+  margin-top: 5px;
+  margin-bottom : 15px;
+  border-radius: 20px;
+  fill: white;
+  border : double 3px transparent;
+	background : linear-gradient(white , white) padding-box,  
+  linear-gradient(to right , #00c9ff, #92fe9d) border-box; 
+  border-radius : 20px;
+  border : 2px solid transparent;
+}
+
+.floating-screen button {
+	display : block;
+	margin : 10px auto;
+	color:  white;
+	background : linear-gradient(black , black) padding-box,  
+  linear-gradient(to right , #00c9ff, #92fe9d) border-box; 
+  border-radius : 20px;
+  border : 2px solid transparent;
+	padding : 5px 20px;
+	cursor : pointer;
+	font-weight : 800;
+
+}
+
+.floating-screen button:hover{
+	background : linear-gradient(to right , #00c9ff , #92fe9d) padding-box,  
+  linear-gradient(to right , #00c9ff, #92fe9d) border-box; 
 }
 
 .profile {
@@ -221,11 +251,11 @@ nav .filter{
 }
 
 .dropdown-content {
-  display: none;
   position: absolute;
-  background-color: white;
   width: auto;
-  box-shadow: 0px 8px 16px 0px skyblue;
+  color : white;
+  background: linear-gradient(to right , #232526 , #414345);
+  box-shadow: 0px 3px 5px skyblue;
   z-index: 1;
   right: 5px; 
   top: 60px; 
@@ -395,6 +425,7 @@ padding : 8px 10px;
 
   nav .nav-items{
     display : none;
+    background : linear-gradient(to right , #232526 , #414345);
     left : -100%;
     transition : 0.5s ease;
     position : fixed;
@@ -402,7 +433,6 @@ padding : 8px 10px;
     top : 72px;
     width : 200px;
     height : 100%;
-    background : white;
     display : inline-block;
     padding : 10px;
     border-radius: 0px 10px 10px 10px;
@@ -422,7 +452,7 @@ padding : 8px 10px;
   }
   nav .nav-items li {
     line-height : 40px;
-    margin : 10px 30px;
+    margin : 30px 30px;
   }
 
   nav .filter {
