@@ -1,39 +1,68 @@
 from applications.database import db 
-from flask_sqlalchemy import SQLAlchemy 
-from datetime import date 
+from flask_login import UserMixin
 
-class User(db.Model):
+class User(db.Model , UserMixin):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String, nullable=False)
-    email = db.Column(db.String, unique=True , nullable = False)
+    name = db.Column(db.String(25), nullable=False)
+    email = db.Column(db.String(200), unique=True , nullable = False)
     password=db.Column(db.String, nullable=False)
+    role = db.Column(db.String(10) , nullable=False)
+    store = db.relationship("Store" , backref='user' , lazy=True)
+    purchase = db.relationship("Purchases" , backref = 'user' , lazy = True)
+    cart = db.relationship('Cart' , backref = 'user' , lazy = True)
 
-class Manager(db.Model):
-    __tablename__ = "manager"
-    manager_id = db.Column(db.Integer, primary_key=True , autoincrement=True)
-    manager_name = db.Column(db.String, nullable=False)
-    manager_email = db.Column(db.String,unique=True, nullable = False)
-    password=db.Column(db.String, nullable=False)
-    is_admin=db.Column(db.Boolean, default = False , nullable=True)
+class Categories(db.Model):
+    __tablename__ = 'categories'
+    id = db.Column(db.Integer , primary_key  = True , autoincrement = True)
+    name = db.Column(db.String(20) , nullable=  False)
+    products = db.relationship("Product" , backref='categories' , lazy = True)
+
+class Store(db.Model):
+    __tablename__ = "store"
+    id = db.Column(db.Integer , primary_key = True , autoincrement = True)
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id') , nullable = False)
+    approved = db.Column(db.Boolean, nullable= False , default = False)
+    products = db.relationship("Product" , backref = 'store' , lazy= True)
+    request = db.relationship("Request" , backref = 'store' , lazy = True)
+
 
 class Product(db.Model):
     __tablename__ = "product"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    owner = db.Column(db.Integer, nullable=False)
-    name = db.Column(db.String, nullable=False)
-    category = db.Column(db.String, nullable=False)
-    unit = db.Column(db.String,nullable = False)
+    owner_id = db.Column(db.Integer, db.ForeignKey('store.owner_id') , nullable=False)
+    name = db.Column(db.String(20), nullable=False)
+    category = db.Column(db.Integer,db.ForeignKey('categories.id') , nullable=False)
+    unit = db.Column(db.String(8),nullable = False)
     stock = db.Column(db.Integer, nullable=False)
-    price = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
     expiry_date = db.Column(db.Date, nullable=False)
+    orders = db.relationship("Orders", backref='product' ,lazy = True)
+    cart = db.relationship("Cart" , backref = "product" , lazy = True)
 
 class Purchases(db.Model):
     __tablename__ = "purchases"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    product = db.Column(db.Integer, nullable=False)
-    owner = db.Column(db.Integer, nullable=False)
-    customer = db.Column(db.Integer, nullable=False)
-    count = db.Column(db.Integer, nullable=False)
-    price = db.Column(db.Integer, nullable = False)
-    date_added = db.Column(db.Date, nullable=False, default=date.today)
+    id = db.Column(db.Integer , primary_key = True , autoincrement = True)
+    user_id = db.Column(db.Integer , db.ForeignKey("user.id") , nullable = False)
+    order = db.relationship("Orders" , backref= "purchases" , lazy = True)
+
+class Orders(db.Model):
+    __tablename__ = 'orders'
+    id = db.Column(db.Integer, primary_key = True , autoincrement = True)
+    purchase_id = db.Column(db.Integer , db.ForeignKey('purchases.id') , nullable = False)
+    product_id = db.Column(db.Integer , db.ForeignKey('product.id') , nullable = False)
+    quantity = db.Column(db.Integer , nullable = False)
+    sold_price = db.Column(db.Float , nullable = False)
+
+class Request(db.Model):
+    __tablename__ = 'request'
+    id = db.Column(db.Integer , primary_key = True , autoincrement = True)
+    request_from = db.Column(db.Integer ,db.ForeignKey('store.id') , nullable = False)
+    request_message = db.Column(db.String(200) , nullable = False)
+
+class Cart(db.Model):
+    __tablename__ = 'cart'
+    id = db.Column(db.Integer , primary_key = True , autoincrement = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id') , nullable = False)
+    product_id = db.Column(db.Integer , db.ForeignKey('product.id') , nullable = False)
+    quantity = db.Column(db.Integer , nullable = False)

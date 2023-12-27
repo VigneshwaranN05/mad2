@@ -2,7 +2,7 @@ from flask_restful import Resource, reqparse
 from datetime import datetime
 from flask import request
 from passlib.hash import pbkdf2_sha256 as passhash
-from applications.models import Product, Manager, db
+from applications.models import Product, db
 
 parser = reqparse.RequestParser()
 parser.add_argument('name', type=str)

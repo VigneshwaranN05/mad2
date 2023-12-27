@@ -15,13 +15,16 @@
     <div class='nav-items'>
       <li><a href='/' class='active'>Home</a></li>
       <li><a href='/category'>Category</a></li>
-      {% if not ismanager %}
+      {% if not current_user.is_authenticated or current_user.role == "User"   %}
       <li><a href='/cart'>My Cart</a></li>
-      {% else %}
+      {% endif %}
+      {% if current_user.is_authenticated and current_user.role == "Manager" %}
       <li><a href='/store'>Store</a></li>
       {% endif %}
+      {% if current_user.role != 'Admin' %}
       <li><a href='/history'>History</a></li>
-      {% if ismanager %}
+      {% endif %}
+      {% if current_user.role == "Manager" %}
       <li><a href='/analytics'>Analytics</a></li>
       {% endif %}
     </div>
@@ -75,8 +78,8 @@
         <li class="profile">
           <img src='../static/images/user.svg' id="profile-dropdown-trigger" @click=toggleProfileDropdown>
           <div class="dropdown-content" id="profile-dropdown" v-if="profileDropdownIsActive">
-            {% if signed %}
-            <b>{{username}}</b><br><br>
+            {% if current_user.is_authenticated %}
+            <b>{{current_user.name}}</b><br><br>
             <a href='logout'>Logout</a>
             {% else %}
             <a href='signup'>SignUp</a><br>
@@ -101,7 +104,7 @@
       {% if product.expiry_date >= today %}
       <p class='card-items'>Expire Date : {{product.expiry_date}}<br>(yyyy-mm-dd) </p>
       <hr>
-      {% if signed and not ismanager %}
+      {% if current_user.is_authenticated and current_user.role == "User" %}
       <form method="POST">
         <p><input type='number' name='count' min='1' max="100" placeholder='Qunatity'><br>
           <button>Add to cart</button>
@@ -117,7 +120,7 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
   <script src="/static/scripts/home.js"></script>
-  <script src="/static/scripts/newhome.js"></script>
+  <script src="/static/scripts/vuehome.js"></script>
 </body>
 
 </html>

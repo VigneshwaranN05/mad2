@@ -1,9 +1,12 @@
 from flask import Flask
 from applications.database import db
-from applications.models import Manager
+from applications.models import User
 from flask_restful import Api
-
 from api.product_resource import ProductResource, ProductDetail
+from flask_login import LoginManager
+from applications.controllers import controllers_bp
+from passlib.hash import pbkdf2_sha256 as passhash
+
 def create_app():
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
@@ -12,27 +15,37 @@ def create_app():
 
     db.init_app(app)
 
-    app.app_context().push()
+    login_manager = LoginManager(app)
+    login_manager.login_view = 'controllers.user_login'
 
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
+    app.register_blueprint(controllers_bp)
 
     return app
 
 def create_admin_manager():
-    admin_manager = Manager.query.filter_by(manager_email="admin@gmail.com").first()
+    admin_manager = User.query.filter_by(email="admin@gmail.com").first()
     if not admin_manager:
-        new_admin_manager = Manager(manager_name='admin' , manager_email='admin@gmail.com', password='admin', is_admin=True)
+        password_hased = passhash.hash('admin')
+        new_admin_manager = User(name='admin' , email='admin@gmail.com', password=password_hased, role="Admin")
 
         db.session.add(new_admin_manager)
         db.session.commit()
 
 
-app = create_app()
-api = Api(app)
-api.add_resource(ProductResource, '/api/product/<int:product_id>' , '/api/product')
-api.add_resource(ProductDetail , '/api/allproducts' )
 from applications.controllers import *
 
 if __name__ == "__main__":
-    db.create_all()
-    create_admin_manager()
-    app.run(debug=True)
+    app = create_app()
+    api = Api(app)
+    api.add_resource(ProductResource, '/api/product/<int:product_id>' , '/api/product')
+    api.add_resource(ProductDetail , '/api/allproducts' )
+
+    with app.app_context():
+        db.create_all()
+        create_admin_manager()
+    
+    app.run(host='0.0.0.0' , debug=True)

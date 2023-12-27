@@ -1,24 +1,28 @@
-from flask import render_template,url_for,request, session, redirect
-from flask import current_app as app
+from flask import Blueprint, render_template,url_for,request, session, redirect
 from sqlalchemy import or_
 from applications.database import db
-from applications.models import User, Manager , Product,Purchases
+from applications.models import User, Product,Purchases
 from passlib.hash import pbkdf2_sha256 as passhash
 import json
 import pandas as pd
 from datetime import timedelta , datetime , date
 import matplotlib.pyplot as plt
+from flask_login import login_user, login_required, logout_user , current_user
 
+controllers_bp = Blueprint('controllers' , __name__)
 
-@app.route('/', methods=['GET','POST'])
+@controllers_bp.route('/', methods=['GET','POST'])
 def home():
     products = Product.query.order_by(Product.id.desc()).all()
     today = date.today()
-    if "email" in session:
+    
+    print("Current User : " , current_user.is_authenticated)
+    if current_user.is_authenticated:
         if request.method == "GET":
             message = session.pop('message',None)
             message_color = session.pop('message_color', None)
-            return render_template('home.html',today=today,products=products , message = message , message_color = message_color , signed = True , username=session['username'], ismanager=session['manager'])
+            return render_template('home.html',today=today,products=products , 
+                                   message = message , message_color = message_color )
         elif request.method == "POST":
             product_id , count = request.form['product'], request.form['count']
             product = Product.query.filter_by(id = product_id).first()
@@ -38,7 +42,7 @@ def home():
                 else:
                     session['message'] = "Out of stock"
                     session['message_color'] = 'orangered'
-                    return redirect(url_for('home'))
+                    return redirect('/')
             else:
                 current = int(count)
                 if current <= int(product.stock):
@@ -47,10 +51,10 @@ def home():
             session['cart'] = json.dumps(cart)
             session['message'] = "Producted Added to cart"
             session['message_color'] = 'green'
-            return redirect(url_for('home'))
-    return render_template('home.html',today=today,products=products , singed=False)
+            return redirect('/')
+    return render_template('home.html',today=today,products=products)
     
-@app.route('/category')
+@controllers_bp.route('/category' , methods=['GET'])
 def category():
     unique_categories = db.session.query(Product.category).distinct().all()
     unique_categories = [category[0] for category in unique_categories]
@@ -58,22 +62,23 @@ def category():
     for category in unique_categories:
         products = Product.query.filter_by(category=category).first()
         products_by_category[category] = products.id
-    if "email" in session:
-        return render_template("category.html", products_by_category = products_by_category , signed=True, username=session['username'], ismanager=session['manager'])
+    if current_user.is_authenticated:
+        return render_template("category.html", products_by_category = products_by_category) 
     else :
-        return render_template("category.html", signed=False , products_by_category=products_by_category)
+        return render_template("category.html", products_by_category=products_by_category)
 
-@app.route("/category_need/<category_need>", methods=['GET','POST'])
+@controllers_bp.route("/category_need/<category_need>", methods=['GET','POST'])
+@login_required
 def category_need(category_need):
     unique_categories = db.session.query(Product.category).distinct().order_by(Product.category).all()
     unique_categories =  [category[0] for category in unique_categories]
     product_need = Product.query.filter_by(category=category_need).all()
     today = date.today()
-    if 'email' in session:
+    if current_user.is_authenticated:
         if request.method == 'GET':
             message = session.pop('message',None)
             message_color = session.pop('message_color', None)
-            return render_template('category_need.html',today=today,unique_categories= unique_categories , category_need=category_need , ismanager=session['manager'], signed=True , username = session['username'] , product_need = product_need , message = message , message_color = message_color)
+            return render_template('category_need.html',today=today,unique_categories= unique_categories , category_need=category_need , product_need = product_need , message = message , message_color = message_color)
         else:
             product_id , count = request.form['product'], request.form['count']
             product = Product.query.filter_by(id = product_id).first()
@@ -93,7 +98,7 @@ def category_need(category_need):
                 else:
                     session['message'] = "Out of stock"
                     session['message_color'] = 'orangered'
-                    return redirect(url_for('category_need',category_need=category_need))
+                    return redirect(url_for('controllers.category_need',category_need=category_need))
             else:
                 current = int(count)
                 if current <= int(product.stock):
@@ -102,32 +107,38 @@ def category_need(category_need):
             session['cart'] = json.dumps(cart)
             session['message'] = "Producted Added to cart"
             session['message_color'] = 'green'
-            return redirect(url_for('category_need', category_need = category_need))
+            return redirect(url_for('controllers.category_need', category_need = category_need))
     else:
         session['message'] = "Login to continue"
         session['message_color'] = 'green'
         return redirect('/login')
 
-@app.route("/store")
+@controllers_bp.route("/store")
+@login_required
 def store():
-    if "email" in session and session['manager']:
+    if current_user.is_authenticated: 
         today = date.today()
-        manager = Manager.query.filter_by(manager_email = session['email']).first()
-        manager_id = manager.manager_id
+        manager = User.query.filter_by(email = session['email']).first()
+        if current_user.role == "Manager": 
+            return redirect('/login')
+
+        manager_id = manager.id
         products = Product.query.filter_by(owner = manager_id)
         message = session.pop('message',None)
         message_color = session.pop('message_color', None)
-        return render_template("store.html",today=today, products=products, message=message , message_color=message_color , signed=True, username=session['username'],ismanager=session['manager'])
+        return render_template("store.html",today=today, products=products, message=message , 
+                               message_color=message_color) 
     else:
         session['message'] = "Login to continue"
         session['message_color'] = 'green'
         return redirect('/login')
 
-@app.route("/delete_item/<product_id>",methods=['GET','POST'])
+@controllers_bp.route("/delete_item/<product_id>",methods=['GET','POST'])
+@login_required
 def delete_item(product_id):
-    if "email" in session and session['manager']:
-        manager = Manager.query.filter_by(manager_email=session["email"]).first()
-        if manager is not None:
+    if current_user.is_authenticated and current_user.role == "Manager":
+        manager = User.query.filter_by(email=session["email"]).first()
+        if manager is not None and manager.role == "Manager" :
             if request.method == "POST":
                 product = Product.query.filter_by(id = product_id).first()
                 db.session.delete(product)
@@ -137,11 +148,12 @@ def delete_item(product_id):
                 return redirect("/store")
     return redirect("/")
 
-@app.route("/edit_item/<product_id>", methods=["GET", "POST"])
+@controllers_bp.route("/edit_item/<product_id>", methods=["GET", "POST"])
+@login_required
 def edit_product(product_id):
-    if "email" in session and session['manager']:
-        manager = Manager.query.filter_by(manager_email=session["email"]).first()
-        if manager is not None:
+    if current_user.is_authenticated and current_user.role == "Manager":
+        manager = User.query.filter_by(email=session["email"]).first()
+        if manager is not None and manager.role == "Manager":
             product = Product.query.filter_by(id=product_id).first()
             if request.method == "GET":
                 message = session.pop('message',None)
@@ -189,17 +201,18 @@ def edit_product(product_id):
                 return redirect("/store")
     return redirect("/")
 
-@app.route("/add_item", methods=['GET', 'POST'])
+@controllers_bp.route("/add_item", methods=['GET', 'POST'])
+@login_required
 def add_item():
-    if "email" in session and session['manager']:
-        manager = Manager.query.filter_by(manager_email=session['email']).first()
+    if current_user.is_authenticated and current_user.role == "Manager":
+        manager = User.query.filter_by(email=session['email']).first()
         if request.method == 'GET':
-            if session['manager']:
+            if session['manager'] and manager is not None and manager.role == "Manager":
                 message = session.pop('message', None)
                 message_color = session.pop('message_color', None)
-                return render_template('add_item.html',message = message  , message_color= message_color , signed=True, username=session['username'], ismanager=session['manager'])
+                return render_template('add_item.html',message = message  , message_color= message_color)
             else:
-                return redirect(url_for('home'))
+                return redirect('/')
         elif request.method == 'POST' and session['manager']:
             given_name = request.form["name"].capitalize()  # Capitalize the name
             category = request.form["category"].capitalize()  # Capitalize the category
@@ -218,12 +231,12 @@ def add_item():
             if date_obj <= datetime(today.year , today.month, today.day):
                 session['message'] = "Invalid Expiry Date"
                 session['message_color'] = "orangered"
-                return redirect(url_for('/add_item'))
+                return redirect('/add_item')
             #Check whether the name is already been used by the owner
-            present_product = Product.query.filter_by(owner=manager.manager_id , name = given_name).first()
+            present_product = Product.query.filter_by(owner=manager.id, name = given_name).first()
             
             if present_product is None:
-                product = Product(name=given_name, category=category, unit=unit, stock=stock, owner=manager.manager_id, price=price , expiry_date=date_obj)
+                product = Product(name=given_name, category=category, unit=unit, stock=stock, owner=manager.id, price=price , expiry_date=date_obj)
                 db.session.add(product)
                 db.session.commit()
                 img.save("./static/products/" + str(product.id) + ".png")
@@ -237,7 +250,7 @@ def add_item():
     else:
         return redirect('/home')
 
-@app.route('/manager_signup', methods=['GET' , 'POST'])
+@controllers_bp.route('/manager_signup', methods=['GET' , 'POST'])
 def manager_signup():
     if request.method == "GET":
         message = session.pop('message',None)
@@ -249,21 +262,21 @@ def manager_signup():
         password = request.form['manager-password']
         password = passhash.hash(password)
         
-        manager_exist= Manager.query.filter_by(manager_email = manager_email).first()
+        manager_exist= User.query.filter_by(email = manager_email).first()
         if manager_exist is None:
-            new_manager = Manager(manager_name=manager_name,manager_email=manager_email,password=password)
+            new_manager = User(name=manager_name,email=manager_email,password=password, role="Manager")
             db.session.add(new_manager)
             db.session.commit()
 
             session['message'] = "Acccount created successfully!!"
             session['message_color'] = 'green'
-            return redirect(url_for('user_login'))
+            return redirect('/login')
         else:
             session['message'] = "Eamil already exist"
             session['message_color']  = 'orangered'
-            return redirect(url_for('manager_signup'))
+            return redirect('/signup')
 
-@app.route('/signup', methods=['GET','POST'])
+@controllers_bp.route('/signup', methods=['GET','POST'])
 def signup():
     if request.method == 'GET':
         message = session.pop('message',None)
@@ -276,39 +289,39 @@ def signup():
         password = passhash.hash(password)
         user_exist = User.query.filter_by(email=email).first()
         if user_exist is None:        
-            new_user = User(username=username,email=email,password=password)
+            new_user = User(name=username,email=email,password=password , role="User")
             db.session.add(new_user)
             db.session.commit()
             
             session['message'] = "Account cerated successfully!!"
             session['message_color'] = 'green'
-            return redirect(url_for('user_login'))
+            return redirect('/login')
         else:
             session['message'] = "Eamil already exist"
             session['message_color'] = 'orangered'
-            return redirect(url_for('signup'))
+            return redirect('/signup')
 
-@app.route('/manager_login',methods=['GET','POST'])
+@controllers_bp.route('/manager_login',methods=['POST'])
 def manager_login():
     if request.method == 'POST':
         email = request.form['manager-email']
         password = request.form['manager-password']
-        manager = Manager.query.filter_by(manager_email = email).first()
-        if manager is None:
+        manager = User.query.filter_by(email = email).first()
+        if manager is None or manager.role == "User":
             session['message'] = "Invalid Email"
             session['message_color'] = 'orangered'
-            return redirect(url_for('user_login'))
+            return redirect('/login')
         if not passhash.verify(password , manager.password):
             session['message'] = "Wrong Password"
             session['message_color'] = 'orangered'
-            return redirect(url_for('user_login'))
-        session['email'] = email
-        session['username'] = manager.manager_name
-        session['manager'] = True
-        
-        return redirect("/")
+            return redirect('/login')
+        else : 
+            session['message'] = "Logged In successfully"
+            session['message_color'] = "Green"
+            login_user(manager)
+            return redirect("/")
 
-@app.route('/login',methods=['GET','POST'])
+@controllers_bp.route('/login',methods=['GET','POST'])
 def user_login():
     if request.method == 'GET':
         message = session.pop('message',None)
@@ -319,32 +332,29 @@ def user_login():
         email = request.form['email']
         password = request.form['password']
         user = User.query.filter_by(email= email).first()
-        if user is None:
-            session['message'] = "Email not found"
+        if user is None or user.role != "User":
+            session['message'] = "User Email not found"
             session['message_color'] = 'orangered'
-            return redirect(url_for('user_login'))
-        if not passhash.verify(password,user.password) :
+            return redirect('/login')
+        elif not passhash.verify(password,user.password) :
             session['message'] = "Wrong Password"
             session['message_color'] = 'orangered'
-            return redirect(url_for('user_login'))
-        session["username"] = user.username 
-        session['email'] = email
-        session['manager'] = False
-        session['cart'] = json.dumps(dict())
-        return redirect('/')
+            return redirect('/login')
+        else:
+            login_user(user)
+            session['cart'] = json.dumps(dict())
+            return redirect('/')
 
-@app.route('/logout')
+@controllers_bp.route('/logout')
+@login_required 
 def logout():
-    if "email" in session:
-        session.pop("email")
-        session.pop("username")
-        session['manager'] = False
-        session['cart'] = json.dumps(dict())
+    logout_user()
     return redirect('/')
 
-@app.route("/cart", methods = ["GET", "POST"])
+@controllers_bp.route("/cart", methods = ["GET", "POST"])
+@login_required
 def cart():
-    if "email" in session and not session['manager']:
+    if current_user.is_authenticated and current_user.role == "User":
         cart = json.loads(session["cart"])
         user = User.query.filter_by(email=session["email"]).first()
         products = [[Product.query.filter_by(id = product_id).first(), cart[product_id]] for product_id in cart.keys()]
@@ -352,7 +362,7 @@ def cart():
         if request.method == "GET":
             message = session.pop('message',None)
             message_color = session.pop('message_color',None)
-            return render_template("cart.html", message=message , message_color = message_color,  products = products, total = total , ismanager=session['manager'],signed=True, username=user.username)
+            return render_template("cart.html", message=message , message_color = message_color,  products = products, total = total)
         else:
             if "remove" in request.form:
                 cart.pop(request.form["remove"])
@@ -377,22 +387,19 @@ def cart():
         session['message_color'] = 'green'
         return redirect("/login")
     
-@app.route('/search',methods=['GET','POST'])
+@controllers_bp.route('/search',methods=['GET','POST'])
 def search():
-    if "email" in session and request.method == 'POST':
+    if current_user.is_authenticated and request.method == 'POST':
         query = request.form['query']
         searched_products = Product.query.filter(or_(Product.name.ilike(f"%{query}%"))).all()
-        return render_template('search.html',products=searched_products , username=session['username'], ismanager = session['manager'],signed = True)
-    elif request.method == 'GET' and "email" in session :
-        return render_template('home.html' , username=session['username'] , ismanager = session['manager'] , singed = True)
-    else:
-        session['message'] = "Login to continue"
-        session['message_color'] = "green"
-        return redirect('/login')
+        return render_template('search.html',products=searched_products )
+    elif request.method == 'GET' :
+        return redirect('/')
 
-@app.route('/history',methods=["GET"])
+@controllers_bp.route('/history',methods=["GET"])
+@login_required
 def history():
-    if "email" in session and not session['manager']:
+    if current_user.is_authenticated and current_user.role == "User": 
         user = User.query.filter_by(email=session['email']).first()
         history = Purchases.query.filter_by(customer = user.id).all()
         return render_template('history.html',username=session['username'],signed = True, ismanager=session['manager'],history = history)
@@ -401,12 +408,12 @@ def history():
         session['message_color'] = "green"
         return redirect('/login')
 
-@app.route('/analytics',methods=['GET'])
+@controllers_bp.route('/analytics',methods=['GET'])
 
 def analytics():
-    if "email" in session and session['manager']:
-        manager = Manager.query.filter_by(manager_email=session['email']).first()
-        purchases = Purchases.query.filter_by(owner=manager.manager_id)
+    if current_user.is_authenticated and current_user.role == "Manager":
+        manager = User.query.filter_by(email=session['email']).first()
+        purchases = Purchases.query.filter_by(owner=manager.id)
 
         data = {}
         product_counts = {}
@@ -454,12 +461,12 @@ def analytics():
         plt.xlabel('Date')
         plt.ylabel("Number of Products Sold")
         plt.title("Number of products sold over 10 days")
-        plt.savefig('./static/' + str(manager.manager_id) + '1.png', format='png')
+        plt.savefig('./static/' + str(manager.id) + '1.png', format='png')
         
         plt.figure(figsize=(8,6))
         plt.pie(product_sold_counts, labels=product_names , autopct='%1.1f%%',startangle=140 )
         plt.title("Percentage of Products Sold Over 10 days")
-        plt.savefig('./static/'+str(manager.manager_id) + '2.png', format='png')
+        plt.savefig('./static/'+str(manager.id) + '2.png', format='png')
 
         df2 = pd.DataFrame(list(category_revenue.items()) , columns = ['Category', 'Revenue'])
         plt.figure(figsize=(10,6))
@@ -468,7 +475,7 @@ def analytics():
         plt.ylabel('Revenue')
         plt.title('Revenue by Category for 10 days')
         plt.xticks(rotation=0, ha='right')
-        plt.savefig('./static/'+str(manager.manager_id) + '3.png', format='png')
+        plt.savefig('./static/'+str(manager.id) + '3.png', format='png')
 
         df3 = pd.DataFrame(list(daily_revenue.items()), columns=['date', 'revenue'])
         df3['date'] = pd.to_datetime(df3['date'])
@@ -479,7 +486,7 @@ def analytics():
         plt.ylabel('Daily Revenue')
         plt.title('Daily Revenue over the last 10 days')
         plt.xticks(rotation=0, ha='right')
-        plt.savefig('./static/' + str(manager.manager_id) + '4.png', format='png')
+        plt.savefig('./static/' + str(manager.id) + '4.png', format='png')
 
         return render_template('analytics.html', username=session['username'], ismanager=session['manager'], signed=True, id=manager.manager_id)
     else:
