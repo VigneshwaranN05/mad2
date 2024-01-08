@@ -3,6 +3,7 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   background: linear-gradient(to right, #232526, #414345);
 
@@ -35,6 +36,7 @@ nav .nav-items {
 nav .nav-items li {
   padding: 0 18px;
 }
+
 nav .nav-items li a {
   font-size: 20px;
   user-select: none;
@@ -61,17 +63,11 @@ nav .nav-items li a.active {
   transition: padding-bottom 300ms ease-in-out;
 }
 
-nav .nav-items li a:hover {
-  color: #222222;
-  -webkit-transition: color 500ms linear;
-  -ms-transition: color 500ms linear;
-  transition: color 500ms linear;
-}
-
 nav .nav-buttons {
   display: flex;
   list-style: none;
 }
+
 nav .nav-buttons li {
   padding: 0 5px;
   margin-left: 15px;
@@ -106,7 +102,7 @@ nav .nav-buttons svg {
   position: absolute;
   width: 25px;
   height: 25px;
-  right: 100px;
+  right: 70px;
   top: 10px;
   margin-top: 10px;
   margin-right: 3px;
@@ -128,65 +124,16 @@ nav .nav-buttons img {
 nav .nav-buttons img:hover {
   transform: scale(0.8);
 }
+
 nav .menu-icon {
   display: none;
   user-select: none;
 }
 
-nav .filter {
-  position: absolute;
-  right: 60px;
-  top: 20px;
-}
-
-.filter-options {
-  color: white;
-  background: linear-gradient(to right, #232526, #414345);
-  position: absolute;
-  top: 60px;
-  right: 0px;
-  width: 250px;
-  box-shadow: 0px 1px 2px 2px skyblue;
-  padding: 10px;
-  border-radius: 10px;
-  z-index: 1;
-  animation: dropdown 0.3s ease;
-}
-
-.filter-options label {
-  display: block;
-  margin: 5px 20px;
-}
-
-.filter-options p {
-  font-weight: 600;
-  margin: 10px 10px;
-}
-
-#apply-filter {
-  display: block;
-  margin: 10px auto;
-  color: white;
-  background:
-    linear-gradient(black, black) padding-box,
-    linear-gradient(to right, #00c9ff, #92fe9d) border-box;
-  border-radius: 20px;
-  border: 2px solid transparent;
-  padding: 5px 20px;
-  cursor: pointer;
-  font-weight: 800;
-}
-
-#apply-filter:hover {
-  color: black;
-  background:
-    linear-gradient(to right, #00c9ff, #92fe9d) padding-box,
-    linear-gradient(to right, #00c9ff, #92fe9d) border-box;
-}
-
 [v-cloak] {
   display: none;
 }
+
 .search-icon {
   display: block;
 }
@@ -207,6 +154,7 @@ nav .filter {
   align-items: center;
   margin-bottom: 10px;
 }
+
 .floating-screen {
   padding: 20px;
   background-color: linear-gradient(to right, #232526, #414345);
@@ -246,7 +194,6 @@ nav .filter {
 }
 
 .floating-screen button:hover {
-  color: black;
   background:
     linear-gradient(to right, #00c9ff, #92fe9d) padding-box,
     linear-gradient(to right, #00c9ff, #92fe9d) border-box;
@@ -285,111 +232,44 @@ nav .filter {
 .dropdown-content b {
   font-size: 18px;
 }
+
 .dropdown-content a:hover {
   background-color: #f2f2f2;
 }
 
-.message p {
-  position: fixed;
-  top: 60px;
-  right: 20px;
-  padding: 10px;
-  color: white;
-  border-radius: 5px;
-  z-index: 100;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: opacity 0.5s ease-in-out;
-  opacity: 1;
+.buttons {
+  margin: 20px;
 }
 
-.card-container {
-  top: 70px;
-  margin-top: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 300px);
-  gap: 30px;
-  justify-content: center; /* Center horizontally */
-  align-items: center;
-}
-
-.card {
-  box-shadow: 10px 10px 10px -4px skyblue;
-  max-width: 300px;
-  padding: 10px 10px 0px 10px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  border-radius: 20px;
-  overflow: hidden;
-  transition:
-    transform 0.3s,
-    box-shadow 0.3s;
-  transform: rotate(0deg);
-  user-select: none;
-}
-
-.card:hover {
-  transform: translateY(-5px) rotate(0deg);
-  box-shadow: 0 10px 20px black;
-}
-
-.card h3 {
-  font-weight: 900;
-  color: black;
-  text-align: center;
-}
-
-.card form {
-  margin: 0;
-  text-align: center;
-  margin-bottom: 0px;
-}
-.card button {
-  padding: 8px 10px;
+.buttons a {
+  padding: 10px 15px;
+  font-size: 18px;
+  margin-left: 4px;
+  text-decoration: none;
+  bottom: 10px;
   user-select: none;
   color: white;
-  margin-bottom: 0px;
-  margin-top: 5px;
-  background-color: black;
-  border: solid 2px skyblue;
+  background:
+    linear-gradient(black, black) padding-box,
+    linear-gradient(to right, #00c9ff, #92fe9d) border-box;
   border-radius: 20px;
+  border: 2px solid transparent;
+  padding: 0 10;
   cursor: pointer;
-  -webkit-transition: background-color 300ms linear;
-  -ms-transition: background-color 300ms linear;
-  transition: background-color 300ms linear;
 }
 
-.card button:hover {
-  background-color: skyblue;
+.buttons a:hover {
   color: black;
-  -webkit-transition: background-color 300ms linear;
-  -ms-transition: background-color 300ms linear;
-  transition: background-color 300ms linear;
-}
-.card .image {
-  border-radius: 10px;
-  margin-bottom: 20px;
-  height: 180px;
-  width: 100%;
-  object-fit: cover;
-  border-color: black;
+  background:
+    linear-gradient(to right, #00c9ff, #92fe9d) padding-box,
+    linear-gradient(to right, #00c9ff, #92fe9d) border-box;
 }
 
-.card .card-items {
-  font-weight: 300;
-  margin: 0px;
-}
-
-.card input {
-  width: 90%;
-  border: solid 2px black;
-  border-radius: 10px;
-  padding: 4px;
-}
 @keyframes slideIn {
   0% {
     right: 85px;
   }
+
   100% {
     right: 125px;
   }
@@ -399,15 +279,18 @@ nav .filter {
   0% {
     top: 50px;
   }
+
   100% {
     top: 60px;
   }
 }
+
 @media screen and (max-width: 830px) {
   nav {
     margin: 0px;
     padding: 0px;
   }
+
   nav .nav-buttons {
     padding: 0px;
   }
@@ -417,13 +300,16 @@ nav .filter {
     top: 10px;
     left: 40px;
   }
+
   nav .nav-buttons svg {
     margin: 0px;
     top: 20px;
   }
+
   nav .nav-buttons li a {
     padding: 6px 6px;
   }
+
   nav .menu-icon img {
     position: absolute;
     top: 20px;
@@ -467,6 +353,7 @@ nav .filter {
   nav .menu-icon.active img {
     border: 4px solid skyblue;
   }
+
   nav .nav-items li {
     line-height: 40px;
     margin: 30px 30px;

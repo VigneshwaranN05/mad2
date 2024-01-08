@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template,url_for,request, session, redirect
 from sqlalchemy import or_
 from applications.database import db
-from applications.models import User, Product,Purchases
+from applications.models import *
 from passlib.hash import pbkdf2_sha256 as passhash
 import json
 import pandas as pd
+from flask import jsonify
 from datetime import timedelta , datetime , date
 import matplotlib.pyplot as plt
 from flask_login import login_user, login_required, logout_user , current_user
@@ -16,7 +17,6 @@ def home():
     products = Product.query.order_by(Product.id.desc()).all()
     today = date.today()
     
-    print("Current User : " , current_user.is_authenticated)
     if current_user.is_authenticated:
         if request.method == "GET":
             message = session.pop('message',None)
@@ -113,17 +113,88 @@ def category_need(category_need):
         session['message_color'] = 'green'
         return redirect('/login')
 
+@login_required
+@controllers_bp.route('/approve/<int:id>')
+def approve(id):
+    if current_user.is_authenticated and current_user.role == "Admin":
+        if request.method == 'GET' and id is not None:
+            requested = Request.query.get(id)
+            approve_user = User.query.get(requested.request_by)
+            if not approve_user:
+                session['message'] = f'Manager id {requested.request_by} not Found'
+                session['message_color'] = 'orangered'
+                return redirect('/requests')
+            else:
+                approve_user.approved = 1
+                requested.took_action = True
+                db.session.commit()
+                session['message'] = f'Updated Manager with id {requested.request_by}'
+                session['message_color'] = 'green'
+                return redirect('/requests')
+    else:
+        session['message'] = "Login to Continue"
+        session['message_color'] = 'orange'
+        return redirect('/login')
+
+@login_required
+@controllers_bp.route('/decline/<int:id>')
+def decline(id):
+    if current_user.is_authenticated and current_user.role == "Admin":
+        if request.method == 'GET' and id is not None:
+            requested = Request.query.get(id)
+            decline_user = User.query.get(requested.request_by)
+            if not decline_user:
+                session['message'] = f'Manager id {requested.request_by} not Found'
+                session['messages_color'] = 'orangered'
+                return redirect('/requests')
+            else:
+                decline_user.approved = 0
+                requested.took_action = True 
+                db.session.commit()
+                session['message'] = f'Updated Manager with id {requested.request_by}'
+                session['message_color'] = 'green'
+                return redirect('/requests')
+    else:
+        session['message'] = "Login to Continue"
+        session['message_color'] = 'orange'
+        return redirect('/login')
+@controllers_bp.route('/requests')
+@login_required
+def requests():
+    if current_user.is_authenticated and current_user.role == "Admin":
+        if request.method == "GET":
+            message = session.pop('message',None)
+            message_color = session.pop('message_color', None)
+            admin_request = Request.query.filter_by(took_action= False).all()
+            return render_template('requests.html' , admin_request = admin_request,
+                                   message = message , message_color = message_color) 
+    else:
+        session['message'] = "Login to Continue"
+        session['message_color'] = 'orange'
+        return redirect('/login')
 @controllers_bp.route("/store")
 @login_required
 def store():
     if current_user.is_authenticated: 
         today = date.today()
-        manager = User.query.filter_by(email = session['email']).first()
-        if current_user.role == "Manager": 
+        manager = User.query.filter_by(email = current_user.email).first()
+        if manager is not None and manager.role != "Manager": 
+            session['message'] = "Login to continue"
+            session["message_color"]  = "orange"
             return redirect('/login')
-
+        else:
+            request_state = Request.query.filter_by(request_by = manager.id).first()
+        if  not current_user.approved :
+            if not request_state.took_action:
+                session['message'] = "Not Yet Approved by Admin"
+                session['message_color'] = "orangered"
+                return redirect('/')
+            else:
+                session['message'] = "Request for Creating a Store is Declined"
+                session["message_color"] = 'orangered'
+                return redirect('/')
         manager_id = manager.id
-        products = Product.query.filter_by(owner = manager_id)
+        products = Product.query.filter_by(owner_id = manager_id)
         message = session.pop('message',None)
         message_color = session.pop('message_color', None)
         return render_template("store.html",today=today, products=products, message=message , 
@@ -137,9 +208,9 @@ def store():
 @login_required
 def delete_item(product_id):
     if current_user.is_authenticated and current_user.role == "Manager":
-        manager = User.query.filter_by(email=session["email"]).first()
+        manager = User.query.filter_by(email=current_user.email).first()
         if manager is not None and manager.role == "Manager" :
-            if request.method == "POST":
+            if request.method == "POST" and manager.approved:
                 product = Product.query.filter_by(id = product_id).first()
                 db.session.delete(product)
                 db.session.commit()
@@ -152,14 +223,14 @@ def delete_item(product_id):
 @login_required
 def edit_product(product_id):
     if current_user.is_authenticated and current_user.role == "Manager":
-        manager = User.query.filter_by(email=session["email"]).first()
-        if manager is not None and manager.role == "Manager":
+        manager = User.query.filter_by(email=current_user.email).first()
+        if manager is not None and manager.approved:
             product = Product.query.filter_by(id=product_id).first()
-            if request.method == "GET":
+            if request.method == "GET": 
                 message = session.pop('message',None)
                 message_color = session.pop('message_color', None)
                 return render_template('edit_item.html',message = message  , message_color= message_color , signed=True, username=session['username'], ismanager=session['manager'])
-            elif request.method == "POST":
+            elif request.method == "POST" and manager.approved:
                 name = request.form["name"]
                 category = request.form.get("category", None)
                 unit = request.form.get("unit", None)
@@ -205,15 +276,14 @@ def edit_product(product_id):
 @login_required
 def add_item():
     if current_user.is_authenticated and current_user.role == "Manager":
-        manager = User.query.filter_by(email=session['email']).first()
-        if request.method == 'GET':
-            if session['manager'] and manager is not None and manager.role == "Manager":
-                message = session.pop('message', None)
-                message_color = session.pop('message_color', None)
-                return render_template('add_item.html',message = message  , message_color= message_color)
-            else:
-                return redirect('/')
-        elif request.method == 'POST' and session['manager']:
+        manager = User.query.filter_by(email=current_user.email).first()
+        if request.method == 'GET' and manager.approved:
+            categories = Categories.query.all()
+            message = session.pop('message', None)
+            message_color = session.pop('message_color', None)
+            return render_template('add_item.html', categories = categories,
+                                   message = message  , message_color= message_color) 
+        elif request.method == 'POST' and manager.approved: 
             given_name = request.form["name"].capitalize()  # Capitalize the name
             category = request.form["category"].capitalize()  # Capitalize the category
             stock = request.form["stock"]
@@ -250,6 +320,13 @@ def add_item():
     else:
         return redirect('/home')
 
+@controllers_bp.route('/new_request',methods=['GET' ,'POST'])
+def new_request():
+    if current_user.is_authenticated and current_user.role == "Manager" and current_user.approved:
+        if request.method == 'GET':
+            return render_template('new_request.html')
+
+
 @controllers_bp.route('/manager_signup', methods=['GET' , 'POST'])
 def manager_signup():
     if request.method == "GET":
@@ -264,10 +341,12 @@ def manager_signup():
         
         manager_exist= User.query.filter_by(email = manager_email).first()
         if manager_exist is None:
-            new_manager = User(name=manager_name,email=manager_email,password=password, role="Manager")
+            new_manager = User(name=manager_name,email=manager_email,password=password, role="Manager" , approved = 0)
             db.session.add(new_manager)
             db.session.commit()
-
+            new_request = Request(request_by = new_manager.id ,request_type= "New Manager" , took_action = False, request_message = "New Manager signed up")
+            db.session.add(new_request)
+            db.session.commit()
             session['message'] = "Acccount created successfully!!"
             session['message_color'] = 'green'
             return redirect('/login')
@@ -289,7 +368,7 @@ def signup():
         password = passhash.hash(password)
         user_exist = User.query.filter_by(email=email).first()
         if user_exist is None:        
-            new_user = User(name=username,email=email,password=password , role="User")
+            new_user = User(name=username,email=email,password=password , role="User", approved = 1)
             db.session.add(new_user)
             db.session.commit()
             
@@ -342,7 +421,6 @@ def user_login():
             return redirect('/login')
         else:
             login_user(user)
-            session['cart'] = json.dumps(dict())
             return redirect('/')
 
 @controllers_bp.route('/logout')
@@ -355,38 +433,9 @@ def logout():
 @login_required
 def cart():
     if current_user.is_authenticated and current_user.role == "User":
-        cart = json.loads(session["cart"])
-        user = User.query.filter_by(email=session["email"]).first()
-        products = [[Product.query.filter_by(id = product_id).first(), cart[product_id]] for product_id in cart.keys()]
-        total = sum([int(Product.query.filter_by(id = product_id).first().price) * int(cart[product_id]) for product_id in cart.keys()])
-        if request.method == "GET":
-            message = session.pop('message',None)
-            message_color = session.pop('message_color',None)
-            return render_template("cart.html", message=message , message_color = message_color,  products = products, total = total)
-        else:
-            if "remove" in request.form:
-                cart.pop(request.form["remove"])
-                session["cart"] = json.dumps(cart)
-                return redirect("/cart")
-            else:
-                for product, count in products:
-                    if product.stock-int(count) >= 0 :
-                        product.stock -= int(count)
-                        print(product.price)
-                        purchase = Purchases(product=product.name, owner=product.owner, customer=user.id, count=count , price=product.price)
-                        db.session.add(purchase)
-                        db.session.commit()
-                    else:
-                        session['message'] = "Product out of stock"
-                        session['message_color'] = "orangered"
-                        return redirect('/cart')
-                session["cart"] = json.dumps(dict())
-                return redirect("/")
-    else:
-        session['message'] = 'Login to continue'
-        session['message_color'] = 'green'
-        return redirect("/login")
-    
+        user_cart = Cart.query.filter_by(user_id = current_user.id).all()
+        return render_template("cart.html" , user_cart = user_cart)
+
 @controllers_bp.route('/search',methods=['GET','POST'])
 def search():
     if current_user.is_authenticated and request.method == 'POST':

@@ -2,7 +2,6 @@ const app = Vue.createApp({
   data() {
     return {
       floatingScreenIsActive: false,
-      filterOptionsIsActive: false,
       profileDropdownIsActive: false,
       searchInput: "",
     };
@@ -10,17 +9,10 @@ const app = Vue.createApp({
   methods: {
     toggleFloatingScreen() {
       this.floatingScreenIsActive = !this.floatingScreenIsActive;
-      this.filterOptionsIsActive = false;
-      this.profileDropdownIsActive = false;
-    },
-    toggleFilterOptions() {
-      this.filterOptionsIsActive = !this.filterOptionsIsActive;
-      this.floatingScreenIsActive = false;
       this.profileDropdownIsActive = false;
     },
     toggleProfileDropdown() {
       this.profileDropdownIsActive = !this.profileDropdownIsActive;
-      this.filterOptionsIsActive = false;
       this.floatingScreenIsActive = false;
     },
     closeFloatingScreen(event) {
@@ -37,7 +29,6 @@ const app = Vue.createApp({
   },
   beforeMount() {
     this.floatingScreenIsActive = false;
-    this.filterOptionsIsActive = false;
     this.profileDropdownIsActive = false;
   },
 });

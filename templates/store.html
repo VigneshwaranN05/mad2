@@ -1,123 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="/static/style.css">
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <title>Grocery | Store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="../static/store.css" />
 </head>
 
 <body>
-  <nav class="navbar bg-body-tertiary sticky-top">
-    <div class="container-fluid">
-      <h1>Grocery</h1>
-      <!--Search Box-->
-      <form class="form-inline icon-input" role="search">
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-          viewBox="0 0 16 16">
-          <path
-            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-        </svg>
-        <input class="form-control" type="text" placeholder="Search" aria-label="Search">
-      </form>
-      <ul class="nav-item nav">
-        {% if not signed %}
-          <a class="nav-link" href="signup">Signup </a><a class="nav-link" href="login">Login</a>
-        {% else %}
-          <a class='nav-link'>{{ username }}</a>
-          <a class='nav-link' href='logout'>Logout</a>
-        {% endif %}
-      </ul>
+  <nav class="sticky-top">
+    <div class="menu-icon"><img src="../static/images/menu.png" /></div>
+    <div class="logo">Grocery</div>
+    <div class="nav-items">
+      <li><a href="/">Home</a></li>
+      <li><a href="/category">Category</a></li>
+      {% if current_user.is_authenticated and current_user.role == "Manager"
+      %}
+      <li><a href="/store" class="active">Store</a></li>
+      {% endif %} {% if current_user.role == "Manager" %}
+      <li><a href="/analytics">Analytics</a></li>
+      {% endif %}
     </div>
-    <div class="container-fluid">
-      <ul class="nav nav-underline">
-        <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="/">Home</a>
+    <div class="nav-buttons">
+      <div id="app" v-cloak>
+        <li class="search-container" id="search" v-cloak>
+          <svg class="search-icon" @click="toggleFloatingScreen" xmlns="http://www.w3.org/2000/svg" width="16"
+            height="16" fill="white" viewBox="0 0 16 16">
+            <path
+              d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+          </svg>
+          <div v-if="floatingScreenIsActive" class="floating-screen-container">
+            <div class="closeIcon-con">
+              <img @click="closeFloatingScreen" src="../static/images/close.svg" />
+            </div>
+            <div class="floating-screen" @click.stop>
+              <input v-model="searchInput" placeholder="Search" /><br />
+              <button @click="search">Submit</button>
+            </div>
+            <br />
+          </div>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="category">Category</a>
+        <li class="profile">
+          <img src="../static/images/user.svg" id="profile-dropdown-trigger" @click="toggleProfileDropdown" />
+          <div class="dropdown-content" id="profile-dropdown" v-if="profileDropdownIsActive">
+            {% if current_user.is_authenticated %}
+            <b>{{current_user.name}}</b><br /><br />
+            <a href="logout">Logout</a>
+            {% else %}
+            <a href="signup">SignUp</a><br />
+            <a href="login">Login</a>
+            {% endif %}
+          </div>
         </li>
-        {% if not ismanager %}
-        <li class="nav-item">
-          <a class="nav-link" href="/cart">My Cart</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/history">History</a>
-        </li>
-          {% else %}
-        <li class="nav-item">
-          <a class="nav-link disabled" href="/cart">My Cart</a>
-        </li>
-        {% endif %}
-        {% if ismanager %}
-        <li class="nav-item">
-          <a class="nav-link active" href="/store">My Store</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/analytics">Analytics</a>
-	      </li>
-        {% endif %}
-        </ul>
+      </div>
     </div>
   </nav>
-  <br>
-  <div class="container-fluid">
-        {% if message %}
-        <p style="text-align: center; color : {{message_color}}"> {{message}} </p>
-        {% endif %}
-        <a href="/add_item" class="btn btn-primary">Add Item</a>
-        <br><br>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-          {% for product in products %}
-            <div class="col">
-              {% if product.stock > 0 and product.expiry_date >= today %}
-              <div class="card h-100" style="width: 18rem;  box-shadow: 5px 5px 5px 5px grey; ">
-              {% else %}
-              <div class="card h-100" style="width: 18rem ; box-shadow: 5px 5px 5px 5px red;">
-              {% endif %}  
-                <img src="../static/products/{{product.id}}.png" class="rounded m-2" style="width:17rem ; height: 12rem;" alt="...">
-                 <div class="card-body">
-                  <h5 class="card-title"><b>{{product.name}}</b></h5>
-                  {% if product.stock > 0 %}
-                  <b class="card-title">In Stock : {{product.stock}}</b>
-                  <b class="card-text">{{product.unit}}</b><br>
-                  {% else %}
-                  <b class="card-title" style="color: red; font-size: large;">Out of Stock!</b><br>
-                  {% endif %}
-                  {% if product.expiry_date >= today %}
-                  <b class="card-text">Expiry Date : {{product.expiry_date}} </b> <p>(yyyy-mm-dd)</p>
-                  {% else %}
-                  <b class="card-text" style="color: red; font-size: large;">Expired!</b><br>
-                  {% endif %}
-                  <b class='card-text'>Category : {{product.category}}</b><br>
-                  <b class="card-text">Price : ₹</b>
-                  <b class="card-text">{{product.price}} / {{product.unit}}</b>
-                  {% if signed and ismanager %}
-                  <hr>
-                  <a href="/edit_item/{{product.id}}" class="btn btn-primary btn-sm">Edit </a>   <a onclick="confirmation({{product.id}})" class="btn btn-danger btn-sm ms-4">Delete </a>
-                  {% endif %}
-                </div>
-             
-              </div>
-            </div>
-            {% endfor %}
-          </div>
+  <div class="buttons">
+    <a href="/add_item">Add Item</a>
+    <a href='/new_request'>Add Category</a>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+  <script src="/static/scripts/home.js"></script>
+  <script src="/static/scripts/store.js"></script>
 </body>
-<script>
- function confirmation(productId) {
-    if (confirm("Are you sure?")) {
-        fetch("/delete_item/" + productId, {
-            method: "POST",
-        }).then(() => {
-            location.reload(); // Reload the page
-        }).catch(error => {
-            console.error("Error:", error);
-        });
-    }
-}
-</script>
+
 </html>

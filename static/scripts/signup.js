@@ -43,3 +43,17 @@ function onChangeManager() {
       confirm.setCustomValidity('Passwords do not match');
     }
   }
+
+const message = Vue.createApp({
+  data() {
+    return {
+      toastIsActive: true,
+    };
+  },
+  created() {
+    setTimeout(() => {
+      this.toastIsActive = false;
+    }, 5000);
+  },
+});
+message.mount('.message');

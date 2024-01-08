@@ -1,119 +1,135 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 
 <head>
   <title>Grocery | Home</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <link rel='stylesheet' href="../static/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="../static/style.css" />
 </head>
 
 <body>
-  <nav class='sticky-top'>
-    <div class='menu-icon'><img src='../static/images/menu.png'></div>
-    <div class='logo'>Grocery</div>
-    <div class='nav-items'>
-      <li><a href='/' class='active'>Home</a></li>
-      <li><a href='/category'>Category</a></li>
-      {% if not current_user.is_authenticated or current_user.role == "User"   %}
-      <li><a href='/cart'>My Cart</a></li>
-      {% endif %}
-      {% if current_user.is_authenticated and current_user.role == "Manager" %}
-      <li><a href='/store'>Store</a></li>
-      {% endif %}
-      {% if current_user.role != 'Admin' %}
-      <li><a href='/history'>History</a></li>
-      {% endif %}
-      {% if current_user.role == "Manager" %}
-      <li><a href='/analytics'>Analytics</a></li>
+  <nav class="sticky-top">
+    <div class="menu-icon"><img src="../static/images/menu.png" /></div>
+    <div class="logo">Grocery</div>
+    <div class="nav-items">
+      <li><a href="/" class="active">Home</a></li>
+      <li><a href="/category">Category</a></li>
+      {% if not current_user.is_authenticated or current_user.role == "User"
+      %}
+      <li><a href="/cart">My Cart</a></li>
+      {% endif %} {% if current_user.is_authenticated and current_user.role ==
+      "Manager" %}
+      <li><a href="/store">Store</a></li>
+      {% endif %} {% if current_user.role == 'User' %}
+      <li><a href="/history">History</a></li>
+      {% endif %} {% if current_user.role == "Manager" %}
+      <li><a href="/analytics">Analytics</a></li>
+      {% endif %} {% if current_user.role == "Admin" %}
+      <li><a href="/requests">Requests</a></li>
       {% endif %}
     </div>
-    <div class='nav-buttons'>
+    <div class="nav-buttons">
       <div id="app" v-cloak>
-        <li class='search-container' id="search" v-cloak>
+        <li class="search-container" id="search" v-cloak>
           <svg class="search-icon" @click="toggleFloatingScreen" xmlns="http://www.w3.org/2000/svg" width="16"
             height="16" fill="white" viewBox="0 0 16 16">
             <path
               d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
           </svg>
           <div v-if="floatingScreenIsActive" class="floating-screen-container">
-            <div class=closeIcon-con>
-              <img @click="closeFloatingScreen" src="../static/images/close.svg">
+            <div class="closeIcon-con">
+              <img @click="closeFloatingScreen" src="../static/images/close.svg" />
             </div>
             <div class="floating-screen" @click.stop>
-              <input v-model="searchInput" placeholder="Search"><br>
+              <input v-model="searchInput" placeholder="Search" /><br />
               <button @click="search">Submit</button>
-            </div><br>
+            </div>
+            <br />
           </div>
         </li>
-        <li class='filter'>
-          <img src='../static/images/filter.svg' id='filter-trigger' @click=toggleFilterOptions>
-          <form class='filter-options' v-if="filterOptionsIsActive" method="POST">
-            <div class='filter-section'>
-              <div class='radio-group'>
+        <li class="filter">
+          <img src="../static/images/filter.svg" id="filter-trigger" @click="toggleFilterOptions" />
+          <form class="filter-options" v-if="filterOptionsIsActive" method="POST">
+            <div class="filter-section">
+              <div class="radio-group">
                 <p>Price:</p>
                 <label>
-                  <input type='radio' name='price' value='high-to-low'>High to low
+                  <input type="radio" name="price" value="high-to-low" />High
+                  to low
                 </label>
                 <label>
-                  <input type='radio' name='price' value='low-to-high'>Low to High
+                  <input type="radio" name="price" value="low-to-high" />Low
+                  to High
                 </label>
               </div>
             </div>
-            <hr>
-            <div class='filter-section'>
+            <hr />
+            <div class="filter-section">
               <p>Date:</p>
-              <div class='radio-group'>
+              <div class="radio-group">
                 <label>
-                  <input type='radio' name='date' value='latest' checked>Latest
+                  <input type="radio" name="date" value="latest" checked />Latest
                 </label>
                 <label>
-                  <input type='radio' name='date' value='oldest'> Oldest
+                  <input type="radio" name="date" value="oldest" /> Oldest
                 </label>
               </div>
             </div>
-            <button type='button' id='apply-filter'>Apply</button>
+            <button type="button" id="apply-filter">Apply</button>
           </form>
         </li>
         <li class="profile">
-          <img src='../static/images/user.svg' id="profile-dropdown-trigger" @click=toggleProfileDropdown>
+          <img src="../static/images/user.svg" id="profile-dropdown-trigger" @click="toggleProfileDropdown" />
           <div class="dropdown-content" id="profile-dropdown" v-if="profileDropdownIsActive">
             {% if current_user.is_authenticated %}
-            <b>{{current_user.name}}</b><br><br>
-            <a href='logout'>Logout</a>
+            <b>{{current_user.name}}</b><br /><br />
+            <a href="logout">Logout</a>
             {% else %}
-            <a href='signup'>SignUp</a><br>
-            <a href='login'>Login</a>
+            <a href="signup">SignUp</a><br />
+            <a href="login">Login</a>
             {% endif %}
           </div>
         </li>
       </div>
     </div>
   </nav>
-  <div class='card-container'>
+  {% if message %}
+  <div class="message">
+    <b>
+      <p v-show="toastIsActive" style="background-color: {{message_color}}">
+        {{message}}
+      </p>
+    </b>
+  </div>
+  {% endif %}
+  <div class="card-container">
     {% for product in products %}
-    <div class='card'>
-      <img class='image' src='../static/products/{{product.id}}.png'>
+    <div class="card">
+      <img class="image" src="../static/products/{{product.id}}.png" />
       <h3>{{product.name}}</h3>
-      <p class='card-items' style='font-weight: bold;'>Price : {{product.price}} per {{product.unit}}</p>
+      <p class="card-items" style="font-weight: bold">
+        Price : {{product.price}} per {{product.unit}}
+      </p>
       {% if product.stock > 0 %}
-      <p class='card-items'>Stock : {{product.stock}} {{product.unit}}</p>
+      <p class="card-items">Stock : {{product.stock}} {{product.unit}}</p>
       {% else %}
-      <p class='card-items'>Out of Stock!!!</p>
-      {% endif %}
-      {% if product.expiry_date >= today %}
-      <p class='card-items'>Expire Date : {{product.expiry_date}}<br>(yyyy-mm-dd) </p>
-      <hr>
+      <p class="card-items">Out of Stock!!!</p>
+      {% endif %} {% if product.expiry_date >= today %}
+      <p class="card-items">
+        Expire Date : {{product.expiry_date}}<br />(yyyy-mm-dd)
+      </p>
+      <hr />
       {% if current_user.is_authenticated and current_user.role == "User" %}
       <form method="POST">
-        <p><input type='number' name='count' min='1' max="100" placeholder='Qunatity'><br>
+        <p>
+          <input type="number" name="count" min="1" max="100" placeholder="Qunatity" /><br />
           <button>Add to cart</button>
         </p>
       </form>
-      {% endif %}
-      {% else %}
-      <p class='card-items'>Expired!!!</p>
-      <hr>
+      {% endif %} {% else %}
+      <p class="card-items">Expired!!!</p>
+      <hr />
       {% endif %}
     </div>
     {% endfor %}

@@ -2,10 +2,10 @@
 <html>
 
 <head>
-  <title>Grocery | Cart</title>
+  <title>Grocery | Requests</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="../static/style.css" />
+  <link rel="stylesheet" href="../static/requests.css" />
 </head>
 
 <body>
@@ -15,12 +15,7 @@
     <div class="nav-items">
       <li><a href="/">Home</a></li>
       <li><a href="/category">Category</a></li>
-      {% if not current_user.is_authenticated or current_user.role == "User"
-      %}
-      <li><a href="/cart" class="active">My Cart</a></li>
-      {% endif %} {% if current_user.role != 'Admin' %}
-      <li><a href="/history">History</a></li>
-      {% endif %}
+      <li><a href="/requests" class="active">Requests</a></li>
     </div>
     <div class="nav-buttons">
       <div id="app" v-cloak>
@@ -41,37 +36,6 @@
             <br />
           </div>
         </li>
-        <li class="filter">
-          <img src="../static/images/filter.svg" id="filter-trigger" @click="toggleFilterOptions" />
-          <form class="filter-options" v-if="filterOptionsIsActive" method="POST">
-            <div class="filter-section">
-              <div class="radio-group">
-                <p>Price:</p>
-                <label>
-                  <input type="radio" name="price" value="high-to-low" />High
-                  to low
-                </label>
-                <label>
-                  <input type="radio" name="price" value="low-to-high" />Low
-                  to High
-                </label>
-              </div>
-            </div>
-            <hr />
-            <div class="filter-section">
-              <p>Date:</p>
-              <div class="radio-group">
-                <label>
-                  <input type="radio" name="date" value="latest" checked />Latest
-                </label>
-                <label>
-                  <input type="radio" name="date" value="oldest" /> Oldest
-                </label>
-              </div>
-            </div>
-            <button type="button" id="apply-filter">Apply</button>
-          </form>
-        </li>
         <li class="profile">
           <img src="../static/images/user.svg" id="profile-dropdown-trigger" @click="toggleProfileDropdown" />
           <div class="dropdown-content" id="profile-dropdown" v-if="profileDropdownIsActive">
@@ -87,12 +51,49 @@
       </div>
     </div>
   </nav>
-  <div class="cart-items">
-    <h3>Cart Items</h3>
+  {% if message %}
+  <div class="message">
+    <b>
+      <p v-show="toastIsActive" style="background-color: {{message_color}}">
+        {{message}}
+      </p>
+    </b>
+  </div>
+  {% endif %}
+  <div class="request-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Request By</th>
+          <th>Request Type</th>
+          <th>Request Message</th>
+          <th class='action-head'>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for req in admin_request %}
+        <tr>
+          <td>{{ req.request_by }}</td>
+          <td>{{ req.request_type }}</td>
+          <td>{{ req.request_message }}</td>
+          <td>
+            <div class="action">
+              <div class="approve-btn">
+                <a id="approve" href="/approve/{{ req.id }}">Approve</a>
+              </div>
+              <div class="decline-btn">
+                <a id="decline" href="/decline/{{ req.id }}">Decline</a>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+  <script src="/static/scripts/requests.js"></script>
   <script src="/static/scripts/home.js"></script>
-  <script src="/static/scripts/vuehome.js"></script>
 </body>
 
 </html>

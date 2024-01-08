@@ -8,9 +8,11 @@ class User(db.Model , UserMixin):
     email = db.Column(db.String(200), unique=True , nullable = False)
     password=db.Column(db.String, nullable=False)
     role = db.Column(db.String(10) , nullable=False)
-    store = db.relationship("Store" , backref='user' , lazy=True)
+    approved = db.Column(db.Boolean , nullable = False , default = False)
     purchase = db.relationship("Purchases" , backref = 'user' , lazy = True)
     cart = db.relationship('Cart' , backref = 'user' , lazy = True)
+    products = db.relationship("Product" , backref = 'user' , lazy= True)
+    request = db.relationship("Request" , backref = 'user' , lazy = True)
 
 class Categories(db.Model):
     __tablename__ = 'categories'
@@ -18,19 +20,12 @@ class Categories(db.Model):
     name = db.Column(db.String(20) , nullable=  False)
     products = db.relationship("Product" , backref='categories' , lazy = True)
 
-class Store(db.Model):
-    __tablename__ = "store"
-    id = db.Column(db.Integer , primary_key = True , autoincrement = True)
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id') , nullable = False)
-    approved = db.Column(db.Boolean, nullable= False , default = False)
-    products = db.relationship("Product" , backref = 'store' , lazy= True)
-    request = db.relationship("Request" , backref = 'store' , lazy = True)
 
 
 class Product(db.Model):
     __tablename__ = "product"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey('store.owner_id') , nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id') , nullable=False)
     name = db.Column(db.String(20), nullable=False)
     category = db.Column(db.Integer,db.ForeignKey('categories.id') , nullable=False)
     unit = db.Column(db.String(8),nullable = False)
@@ -57,7 +52,9 @@ class Orders(db.Model):
 class Request(db.Model):
     __tablename__ = 'request'
     id = db.Column(db.Integer , primary_key = True , autoincrement = True)
-    request_from = db.Column(db.Integer ,db.ForeignKey('store.id') , nullable = False)
+    request_by = db.Column(db.Integer ,db.ForeignKey('user.id') , nullable = False)
+    request_type = db.Column(db.String(20), nullable = False)
+    took_action = db.Column(db.Boolean , nullable = False, default = False)
     request_message = db.Column(db.String(200) , nullable = False)
 
 class Cart(db.Model):
@@ -66,3 +63,5 @@ class Cart(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id') , nullable = False)
     product_id = db.Column(db.Integer , db.ForeignKey('product.id') , nullable = False)
     quantity = db.Column(db.Integer , nullable = False)
+    price = db.Column(db.Integer , nullable = False)
+    date = db.Column(db.Date , nullable = False)
