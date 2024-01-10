@@ -55,5 +55,14 @@ const message = Vue.createApp({
   },
 });
 
+const nav = document.querySelector(".sticky-top");
+window.onscroll = function () {
+  if (window.scrollY > 50) {
+    nav.classList.add("nav-scroll");
+  } else {
+    nav.classList.remove("nav-scroll");
+  }
+};
+
 app.mount("#app");
 message.mount(".message");

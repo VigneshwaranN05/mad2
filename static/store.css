@@ -19,6 +19,10 @@ nav {
   padding: 0 10px;
 }
 
+.nav-scroll {
+  background: black;
+  box-shadow: 0 2px 4px skyblue;
+}
 nav .logo {
   color: white;
   user-select: none;
@@ -238,7 +242,8 @@ nav .menu-icon {
 }
 
 .buttons {
-  margin: 20px;
+  margin-top: 20px;
+  margin-left: 10px;
 }
 
 .buttons a {
@@ -265,6 +270,91 @@ nav .menu-icon {
     linear-gradient(to right, #00c9ff, #92fe9d) border-box;
 }
 
+.product-container {
+  margin: 20px 10px;
+  padding: 10px;
+  display: grid;
+  justify-content: space-between;
+  grid-template-columns: repeat(auto-fill, 280px);
+  gap: 20px;
+}
+.card {
+  box-shadow: 10px 10px 10px -4px skyblue;
+  max-width: 300px;
+  padding: 10px 10px 0px 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  overflow: hidden;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+  transform: rotate(0deg);
+  user-select: none;
+}
+
+.card:hover {
+  transform: translateY(-5px) rotate(0deg);
+  box-shadow: 0 10px 20px black;
+}
+
+.card #name {
+  font-size: 30px;
+  text-align: center;
+}
+.card p {
+  margin-bottom: 5px;
+}
+
+.card img {
+  border-radius: 10px;
+  margin-bottom: 20px;
+  height: 180px;
+  width: 100%;
+  object-fit: cover;
+  border-color: black;
+}
+
+.links {
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 5px;
+}
+
+.links a {
+  text-decoration: none;
+  text-align: center;
+  border: 2px solid transparent;
+  padding: 10px 15px;
+  border-radius: 20px;
+  color: white;
+  width: 100px;
+}
+
+.links #edit {
+  background:
+    linear-gradient(to right, black, black) padding-box,
+    linear-gradient(to right, #373b44, #4286f4) border-box;
+}
+
+.links #edit:hover {
+  background:
+    linear-gradient(to right, #373b44, #4286f4) padding-box,
+    linear-gradient(to right, #373b44, #4286f4) border-box;
+}
+
+.links #remove {
+  background:
+    linear-gradient(to right, black, black) padding-box,
+    linear-gradient(to right, #c31432, #240b36) border-box;
+}
+
+.links #remove:hover {
+  background:
+    linear-gradient(to right, #c31432, #240b36) padding-box,
+    linear-gradient(to right, #c31432, #240b36) border-box;
+}
 @keyframes slideIn {
   0% {
     right: 85px;

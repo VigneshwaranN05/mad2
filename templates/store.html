@@ -58,7 +58,33 @@
   </nav>
   <div class="buttons">
     <a href="/add_item">Add Item</a>
-    <a href='/new_request'>Add Category</a>
+    <a href="/new_request">Add Category</a>
+  </div>
+  <div class="product-container">
+    {% for product in products %}
+    <div class="card">
+      <img class="image" id="productImage" src="../static/products/{{product.id}}.png" />
+      <p class="card-items" id="name" style="font-weight: bold">
+        {{ product.name }}
+      </p>
+      <p class="card-items" id="pricePerUnit">
+        Price: {{ product.price }} per {{product.unit}}
+      </p>
+      <p class="card-items" id="stock">
+        Stock: {{product.stock}} {{product.unit}}
+      </p>
+      <p class="card-items" id="category">
+        Category: {{product.categories.name }}
+      </p>
+      <p class="card-items" id="expire-date">
+        Expire Date: {{product.expiry_date}}<br />(yyyy-mm-dd)
+      </p>
+      <div class="links">
+        <a id="edit" href="/edit_item/{{product.id}}">Edit</a>
+        <a id="remove" href="/delete_item/{{product.id}}">Remove</a>
+      </div>
+    </div>
+    {% endfor %}
   </div>
   <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
   <script src="/static/scripts/home.js"></script>

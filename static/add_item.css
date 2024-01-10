@@ -238,10 +238,13 @@ nav .menu-icon {
   background-color: #f2f2f2;
 }
 
-.add-button {
-  margin: 20px;
+#heading {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  padding: 5px;
+  color: white;
+  text-align: center;
 }
-
 .add-item-form {
   display: flex;
   justify-content: space-evenly;
@@ -261,32 +264,42 @@ nav .menu-icon {
   flex-direction: column;
   max-width: 400px;
 }
-
 .card {
+  box-shadow: 10px 10px 10px -4px skyblue;
+  width: 300px;
   padding: 10px 10px 0px 10px;
   height: 450px;
-  width: 300px;
   display: flex;
   flex-direction: column;
   border-radius: 20px;
   overflow: hidden;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+  transform: rotate(0deg);
   user-select: none;
-  box-shadow: 3px 5px 5px skyblue;
-  transition: 0.3s ease all;
 }
 
+.card:hover {
+  transform: translateY(-5px) rotate(0deg);
+  box-shadow: 0 10px 20px black;
+}
+
+.card #name {
+  font-size: 30px;
+  text-align: center;
+}
 .card p {
   margin-bottom: 5px;
 }
 
 .card img {
-  width: 280px;
-  height: 250px;
-  object-fit: contain;
-}
-
-.card:hover {
-  transform: scale(1.02);
+  border-radius: 10px;
+  margin-bottom: 20px;
+  height: 180px;
+  width: 100%;
+  object-fit: cover;
+  border-color: black;
 }
 
 .input-bars input,
@@ -323,7 +336,6 @@ nav .menu-icon {
     linear-gradient(to right, #00c9ff, #92fe9d);
   background-origin: border-box;
   background-clip: padding-box, border-box;
-
 }
 
 .add-button button:hover {
@@ -435,7 +447,7 @@ nav .menu-icon {
   }
 }
 
-@media screen and (max-width : 460px) {
+@media screen and (max-width: 460px) {
   .card-info {
     display: none;
   }

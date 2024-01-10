@@ -57,11 +57,12 @@
     </div>
   </nav>
   <br />
+  <h3 id='heading'>Add Item</h3>
   <div class="add-item-form">
     <div class="card-info">
       <div class="card">
         <img class="image" id="productImage" src="../static/products/default.png" />
-        <p class="card-items" id="name" style="font-weight: bold">Name :</p>
+        <p class="card-items" id="name" style="font-weight: bold"></p>
         <p class="card-items" id="pricePerUnit">Price :</p>
         <p class="card-items" id="stock">Stock :</p>
         <p class="card-items" id="category">Category:</p>
@@ -71,27 +72,28 @@
       </div>
     </div>
     <div class="input-bars">
-      <form method="post">
+      <form action='/add_item' method="post" enctype="multipart/form-data">
 
         <input type="file" name="file" id="fileInput" placeholder="Product-Image" accept="image/png, image/jpeg"
           onchange="handleImage()" required />
         <input type="text" name="product-name" id="productNameInput" placeholder="Product Name" oninput="updateCard()"
           required />
         <select name="product-category" id="categoryInput" placeholder="Category" oninput="updateCard()" required />
+        <option value='' disabled selected>Select Category</option>
         {% for category in categories %}
         <option value='{{category.id}}'>{{category.name}}</option>
         {% endfor %}
         </select>
-        <input type="number" name="price" id="priceInput" placeholder="Price per Unit" oninput="updateCard()"
-          required />
-        <input type="number" name="stock" id="stockInput" placeholder="In Stock" oninput="formatAndSetStock()"
-          required />
         <select name="unit" id="unitInput" placeholder="Unit" oninput="updateCard()" required />
         <option value="" selected>Select Unit</option>
         <option value="Kg">Kg</option>
         <option value="Liter">Liter</option>
         <option value="Pocket">Pocket</option>
         </select>
+        <input type="number" name="price" id="priceInput" placeholder="Price per Unit" oninput="updateCard()"
+          required />
+        <input type="number" name="stock" id="stockInput" placeholder="In Stock" oninput="formatAndSetStock()"
+          required />
         <input type="text" name="expire-date" id="expireDateInput" placeholder="Expire Date" oninput="updateCard()"
           onfocus="(this.type='date')" onblur="(this.type='text')" min="" />
         <div class="add-button">

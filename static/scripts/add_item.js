@@ -71,7 +71,7 @@ function updateCard() {
   var unit = getValueById("unitInput");
   var expireDate = getValueById("expireDateInput");
 
-  document.getElementById("name").innerText = "Name : " + productName;
+  document.getElementById("name").innerText = productName;
   document.getElementById("pricePerUnit").innerText =
     "Price : " + price + (unit ? " per " + unit : "");
   document.getElementById("stock").innerText =
@@ -120,10 +120,9 @@ function handleImage() {
   }
 }
 
-
- var currentDate = new Date();
+var currentDate = new Date();
 var tomorrowDate = new Date(currentDate);
 tomorrowDate.setDate(currentDate.getDate() + 1);
-  var tomorrowDateFormatted = tomorrowDate.toISOString().split('T')[0];
+var tomorrowDateFormatted = tomorrowDate.toISOString().split("T")[0];
 
-  document.getElementById('expireDateInput').min = tomorrowDateFormatted;
+document.getElementById("expireDateInput").min = tomorrowDateFormatted;

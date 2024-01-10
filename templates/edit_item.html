@@ -1,99 +1,125 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Item</title>
-  <link rel="stylesheet" href="/static/style.css">
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <title>Grocery | Edit-item</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="../static/edit_item.css" />
 </head>
 
 <body>
-  <nav class="navbar bg-body-tertiary sticky-top">
-    <div class="container-fluid">
-      <h1>Grocery</h1>
-      <ul class="nav-item nav">
-        {% if not signed %}
-          <a class="nav-link" href="signup">Signup </a><a class="nav-link" href="login">Login</a>
-        {% else %}
-          <a class='nav-link'>{{ username }}</a>
-          <a class='nav-link' href='logout'>Logout</a>
-        {% endif %}
-      </ul>
+  <nav class="sticky-top">
+    <div class="menu-icon"><img src="../static/images/menu.png" /></div>
+    <div class="logo">Grocery</div>
+    <div class="nav-items">
+      <li><a href="/">Home</a></li>
+      <li><a href="/category">Category</a></li>
+      {% if current_user.is_authenticated and current_user.role == "Manager"
+      %}
+      <li><a href="/store">Store</a></li>
+      {% endif %} {% if current_user.role == "Manager" %}
+      <li><a href="/analytics">Analytics</a></li>
+      {% endif %}
     </div>
-    <div class="container-fluid">
-      <ul class="nav nav-underline">
-        <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="/">Home</a>
+    <div class="nav-buttons">
+      <div id="app" v-cloak>
+        <li class="search-container" id="search" v-cloak>
+          <svg class="search-icon" @click="toggleFloatingScreen" xmlns="http://www.w3.org/2000/svg" width="16"
+            height="16" fill="white" viewBox="0 0 16 16">
+            <path
+              d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+          </svg>
+          <div v-if="floatingScreenIsActive" class="floating-screen-container">
+            <div class="closeIcon-con">
+              <img @click="closeFloatingScreen" src="../static/images/close.svg" />
+            </div>
+            <div class="floating-screen" @click.stop>
+              <input v-model="searchInput" placeholder="Search" /><br />
+              <button @click="search">Submit</button>
+            </div>
+            <br />
+          </div>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="category">Category</a>
+        <li class="profile">
+          <img src="../static/images/user.svg" id="profile-dropdown-trigger" @click="toggleProfileDropdown" />
+          <div class="dropdown-content" id="profile-dropdown" v-if="profileDropdownIsActive">
+            {% if current_user.is_authenticated %}
+            <b>{{current_user.name}}</b><br /><br />
+            <a href="logout">Logout</a>
+            {% else %}
+            <a href="signup">SignUp</a><br />
+            <a href="login">Login</a>
+            {% endif %}
+          </div>
         </li>
-        {% if not ismanager %}
-        <li class="nav-item">
-          <a class="nav-link" href="/cart">My Cart</a>
-          </li>
-        <li class='nav-item'>
-        <a class="nav-link" href="/history">History</a>
-        </li>  
-        {% else %}
-          <li class='nav-items'>
-          <a class="nav-link disabled" href="/cart">My Cart</a>
-          </li>  
-        {% endif %}
-        {% if ismanager %}
-        <li class="nav-item">
-          <a class="nav-link active" href="store">My Store</a>
-        </li>
-        <li class='nav-item'>
-        <a class="nav-link" href="/analytics">Analytics</a>
-	      </li> 
-        {% endif %}
-      </ul>
+      </div>
     </div>
   </nav>
-  <br>
-  {% if message %}
-  <p style="text-align: center; color: {{message_color}};"> {{message}}</p>
-  {% endif %}
-  <div class="container-fluid">
-    <div class="container py-4 py-xl-5 mx-auto col-xl-3">
-        <h1>Edit Item</h1>
-        <br>
-        <form method="POST" enctype="multipart/form-data">
-            <div class="input-group mb-3">
-                <input class="form-control" type="file" name="img" placeholder="Upload Image">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Product Name</label>
-              <input type="text" class="form-control" name="name" aria-describedby="emailHelp" >
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Category</label>
-              <input type="text" class="form-control" name="category" >
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Unit</label>
-                <input type="text" class="form-control" name="unit" >
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Stock</label>
-              <input type="number" class="form-control" name="stock" >
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Price Per Unit</label>
-              <input type="number" class="form-control" name="price" >
-            </div>
-            <div class="mb-3">
-              <label class='form-label' for="date">Expiry Date</label>
-              <input type="date" id="date" name="date" class='form-control' >
-            </div>
-            <button type="submit" class="btn btn-primary">Complete</button>
-          </form>
-    </div> 
+  <br />
+  <h3 id="heading">Edit Item</h3>
+  <div class="add-item-form">
+    <div class="card-info">
+      <div class="card">
+        <img class="image" id="productImage" src="../static/products/{{product.id}}.png" />
+        <p class="card-items" id="name" style="font-weight: bold">Name :</p>
+        <p class="card-items" id="pricePerUnit">Price :</p>
+        <p class="card-items" id="stock">Stock :</p>
+        <p class="card-items" id="category">Category:</p>
+        <p class="card-items" id="expire-date">
+          Expire Date : <br />(yyyy-mm-dd)
+        </p>
+      </div>
+    </div>
+    <div class="input-bars">
+      <form action='/add_item' method="post" enctype="multipart/form-data">
+
+        <input type="file" name="file" id="fileInput" accept="image/png, image/jpeg" onchange="handleImage()"
+          required />
+        <input type="text" name="product-name" id="productNameInput" value="{{product.name}}" oninput="updateCard()"
+          required />
+        <select name="product-category" id="categoryInput" value="{{product.categories.name}}" oninput="updateCard()"
+          required />
+        <option value="" disabled selected>Select Category</option>
+        {% for category in categories %}
+        {% if product.category == category.id %}
+        <option value='{{category.id}}' selected>{{category.name}}</option>
+        {% else %}
+        <option value='{{category.id}}'>{{category.name}}</option>
+        {% endif %}
+        {% endfor %}
+        </select>
+        <select name="unit" id="unitInput" placeholder="Unit" oninput="updateCard()" required />
+        {% if product.unit == "Kg" %}
+        <option value="Kg" selected>Kg</option>
+        {% else %}
+        <option vlaue="Kg">Kg</option>
+        {% endif %}
+        {% if product.unit == "Liter" %}
+        <option value="Liter" selected>Liter</option>
+        {% else %}
+        <option value="Liter">Liter</option>
+        {% endif %}
+        {% if product.unit == "Pocket" %}
+        <option value="Pocket" selected>Pocket</option>
+        {% else %}
+        <option value="Pocket">Pocket</option>
+        {% endif %}
+        </select>
+        <input type="number" name="price" id="priceInput" value="{{product.price}}" oninput="updateCard()" required />
+        <input type="number" name="stock" id="stockInput" value="{{product.stock}}" oninput="formatAndSetStock()"
+          required />
+        <input type="text" name="expire-date" id="expireDateInput" value="{{product.expiry_date}}"
+          oninput="updateCard()" onfocus="(this.type='date')" onblur="(this.type='text')" min="" />
+        <div class="add-button">
+          <button type="submit">Add Item</button>
+        </div>
+      </form>
+    </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+  <script src="/static/scripts/home.js"></script>
+  <script src="/static/scripts/edit_item.js"></script>
 </body>
 
 </html>

@@ -17,7 +17,7 @@ class User(db.Model , UserMixin):
 class Categories(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer , primary_key  = True , autoincrement = True)
-    name = db.Column(db.String(20) , nullable=  False)
+    name = db.Column(db.String(20) , nullable=  False, unique = True)
     products = db.relationship("Product" , backref='categories' , lazy = True)
 
 
@@ -55,6 +55,11 @@ class Request(db.Model):
     request_by = db.Column(db.Integer ,db.ForeignKey('user.id') , nullable = False)
     request_type = db.Column(db.String(20), nullable = False)
     took_action = db.Column(db.Boolean , nullable = False, default = False)
+    #request_value is for handling the postprocess of request
+    #new_manager -> User.id is the request_value
+    #new_category -> Category name is the request_value
+    #remove_products -> Product.id is the request_value
+    request_value = db.Column(db.String(20) , nullable = False)
     request_message = db.Column(db.String(200) , nullable = False)
 
 class Cart(db.Model):

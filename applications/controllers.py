@@ -113,24 +113,84 @@ def category_need(category_need):
         session['message_color'] = 'green'
         return redirect('/login')
 
-@login_required
+#getting the request id from GET method
 @controllers_bp.route('/approve/<int:id>')
+@login_required
 def approve(id):
     if current_user.is_authenticated and current_user.role == "Admin":
-        if request.method == 'GET' and id is not None:
-            requested = Request.query.get(id)
-            approve_user = User.query.get(requested.request_by)
-            if not approve_user:
-                session['message'] = f'Manager id {requested.request_by} not Found'
-                session['message_color'] = 'orangered'
-                return redirect('/requests')
-            else:
-                approve_user.approved = 1
-                requested.took_action = True
-                db.session.commit()
-                session['message'] = f'Updated Manager with id {requested.request_by}'
-                session['message_color'] = 'green'
-                return redirect('/requests')
+        try:
+            request_made = Request.query.get(id)
+        except Exception as e:
+            session['message'] = f"Error finding request {id}: {str(e)}"
+            session['message_color'] = 'orangered'
+            return redirect('/')
+
+        if request_made is not None:
+            request_type = request_made.request_type
+
+            if request_type == "new_manager":
+                try:
+                    manager_id = int(request_made.request_value)
+                    managerToUpdate = User.query.get(manager_id)
+                    managerToUpdate.approved = True
+                    request_made.took_action = True
+                    db.session.commit()
+                    session['message'] = f"Updated manager {manager_id}"
+                    session['message_color'] = "green"
+                    return redirect('/requests')
+                except (ValueError , TypeError):
+                    session['message'] = f'Error getting the id f{request_made.request_value}'
+                    session['message_color'] = 'orangered'
+                except Exception as e:
+                    session['message'] = f'Error finding manager {manager_id}: {str(e)}'
+                    session['message_color'] = 'orangered'
+                    return redirect('/')
+
+
+            elif request_type == "new_category":
+                try:
+                    category_name = request_made.request_value
+                    new_category = Categories(name = category_name)
+                    db.session.add(new_category)
+                    request_made.took_action = True
+                    db.session.commit()
+                    session['message'] = f'New Category {category_name} created'
+                    session['message_color'] = 'green'
+                    return redirect('/requests')
+                except Exception as e:
+                    session['message'] = f'Error creating a category {category_name}: {str(e)}'
+                    session['message_color'] = 'orangered'
+                    return redirect('/requests')
+
+            elif request_type == "remove_product":
+                try:
+                    product_id = int(request_made.request_value)
+                    productToRemove = Product.query.filter(Product.id == product_id).first()
+
+                    if productToRemove:
+                        db.session.delete(productToRemove)
+                        request_made.took_action = True
+                        db.session.commit()
+                        session['message'] = f"Product {product_id} deleted successfully."
+                        session['message_color'] = "green"
+                        return redirect('/requests')
+                    else:
+                        session['message'] = f"Product with id {product_id} not found."
+                        session['message_color'] = 'orangered'
+                        return redirect('/requests')
+
+                except (ValueError , TypeError):
+                    session['message'] = f'Error getting the Product id {request_made.request_value}'
+                    session['message_color'] = 'orangered'
+                    return redirect('/requests')
+                except Exception as e:
+                    session['message'] = f"Error deleting Product {product_id}: {str(e)}"
+                    session['message_color'] = 'orangered'
+                    return redirect('/requests')
+        else:
+            session['message'] = f"Request with id {id} not found."
+            session['message_color'] = 'orangered'
+            return redirect('/')
     else:
         session['message'] = "Login to Continue"
         session['message_color'] = 'orange'
@@ -226,10 +286,12 @@ def edit_product(product_id):
         manager = User.query.filter_by(email=current_user.email).first()
         if manager is not None and manager.approved:
             product = Product.query.filter_by(id=product_id).first()
+            categories = Categories.query.all()
             if request.method == "GET": 
                 message = session.pop('message',None)
                 message_color = session.pop('message_color', None)
-                return render_template('edit_item.html',message = message  , message_color= message_color , signed=True, username=session['username'], ismanager=session['manager'])
+                return render_template('edit_item.html',message = message  , message_color= message_color,
+                                       product = product , categories = categories)
             elif request.method == "POST" and manager.approved:
                 name = request.form["name"]
                 category = request.form.get("category", None)
@@ -284,18 +346,18 @@ def add_item():
             return render_template('add_item.html', categories = categories,
                                    message = message  , message_color= message_color) 
         elif request.method == 'POST' and manager.approved: 
-            given_name = request.form["name"].capitalize()  # Capitalize the name
-            category = request.form["category"].capitalize()  # Capitalize the category
+            given_name = request.form["product-name"].capitalize()  # Capitalize the name
+            category = request.form["product-category"].capitalize()  # Capitalize the category
             stock = request.form["stock"]
             unit = request.form['unit'].capitalize()  # Capitalize the unit
-            if unit not in ['Kg','Litre','Pocket']:
+            if unit not in ['Kg','Liter','Pocket']:
                 session['message'] = 'Invalid Unit'
                 session['message_color'] = 'orangered'
                 return redirect('/add_item')
             price = request.form["price"]
-            img = request.files["img"]
+            img = request.files["file"]
 
-            date_str = request.form['date']
+            date_str = request.form['expire-date']
             date_obj = datetime.strptime(date_str , '%Y-%m-%d')
             today = date.today()
             if date_obj <= datetime(today.year , today.month, today.day):
@@ -303,10 +365,12 @@ def add_item():
                 session['message_color'] = "orangered"
                 return redirect('/add_item')
             #Check whether the name is already been used by the owner
-            present_product = Product.query.filter_by(owner=manager.id, name = given_name).first()
+            present_product = Product.query.filter_by(owner_id=manager.id, name = given_name).first()
             
             if present_product is None:
-                product = Product(name=given_name, category=category, unit=unit, stock=stock, owner=manager.id, price=price , expiry_date=date_obj)
+                product = Product(owner_id = manager.id , name = given_name , stock=stock,
+                                  category = category , unit = unit , price = price,
+                                  expiry_date = date_obj)
                 db.session.add(product)
                 db.session.commit()
                 img.save("./static/products/" + str(product.id) + ".png")
@@ -324,7 +388,34 @@ def add_item():
 def new_request():
     if current_user.is_authenticated and current_user.role == "Manager" and current_user.approved:
         if request.method == 'GET':
-            return render_template('new_request.html')
+            managers_products= Product.query.filter(Product.owner_id == current_user.id).with_entities(Product.id , Product.name).all()
+            return render_template('new_request.html', products = managers_products)
+        elif request.method == "POST":
+            request_type = request.form.get('request-select')
+            request_message = request.form.get('request-message')
+            if request_type not in ['new_category' , 'remove_product']:
+                session['message'] = f"Wrong request type {request_type}"
+                session['message_color'] = 'orangered'
+            elif request_type == "new_category":
+                request_value = request.form.get('category-name')
+            elif request_type == "remove_product":
+                request_value = request.form.get('product-select')
+
+            newRequest = Request(request_by = current_user.id , request_type = request_type,
+                                 request_value = request_value , took_action = False, 
+                                 request_message = request_message)
+            db.session.add(newRequest)
+            db.session.commit()
+            session['message'] = "Request is sent to admin"
+            session['message_color'] = "green"
+            return redirect('/new_request')
+    else:
+        return redirect('/login')
+
+
+
+
+
 
 
 @controllers_bp.route('/manager_signup', methods=['GET' , 'POST'])
@@ -344,7 +435,7 @@ def manager_signup():
             new_manager = User(name=manager_name,email=manager_email,password=password, role="Manager" , approved = 0)
             db.session.add(new_manager)
             db.session.commit()
-            new_request = Request(request_by = new_manager.id ,request_type= "New Manager" , took_action = False, request_message = "New Manager signed up")
+            new_request = Request(request_by = new_manager.id ,request_type= "new_manager", took_action = False, request_message = "New Manager signed up" , request_value = new_manager.id )
             db.session.add(new_request)
             db.session.commit()
             session['message'] = "Acccount created successfully!!"
