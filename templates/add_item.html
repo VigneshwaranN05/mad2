@@ -88,10 +88,10 @@
         <option value="Liter">Liter</option>
         <option value="Pocket">Pocket</option>
         </select>
-        <input type="number" name="price" id="priceInput" min='0.1' max=1000 placeholder="Price per Unit"
+        <input type="number" name="price" id="priceInput" step='any' min='0.1' max='10000' placeholder="Price per Unit"
           oninput="formatAndSetPrice()" required />
-        <input type="number" name="stock" id="stockInput" min='0.1' placeholder="In Stock" oninput="formatAndSetStock()"
-          required />
+        <input type="number" name="stock" id="stockInput" step='any' min='0.1' placeholder="In Stock"
+          oninput="formatAndSetStock()" required />
         <input type="text" name="expire-date" id="expireDateInput" placeholder="Expire Date" oninput="updateCard()"
           onfocus="(this.type='date')" onblur="(this.type='text')" min="" />
         <div class="add-button">
