@@ -312,7 +312,6 @@ nav .menu-icon {
   margin-bottom: 20px;
   height: 180px;
   width: 100%;
-  object-fit: cover;
   border-color: black;
 }
 
@@ -326,8 +325,8 @@ nav .menu-icon {
   text-decoration: none;
   text-align: center;
   border: 2px solid transparent;
-  padding: 10px 15px;
   border-radius: 20px;
+  padding: 5px 15px;
   color: white;
   width: 100px;
 }

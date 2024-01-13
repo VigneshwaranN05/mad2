@@ -18,8 +18,6 @@
       {% if current_user.is_authenticated and current_user.role == "Manager"
       %}
       <li><a href="/store">Store</a></li>
-      {% endif %} {% if current_user.role == "Manager" %}
-      <li><a href="/analytics">Analytics</a></li>
       {% endif %}
     </div>
     <div class="nav-buttons">
@@ -90,9 +88,9 @@
         <option value="Liter">Liter</option>
         <option value="Pocket">Pocket</option>
         </select>
-        <input type="number" name="price" id="priceInput" placeholder="Price per Unit" oninput="updateCard()"
-          required />
-        <input type="number" name="stock" id="stockInput" placeholder="In Stock" oninput="formatAndSetStock()"
+        <input type="number" name="price" id="priceInput" min='0.1' max=1000 placeholder="Price per Unit"
+          oninput="formatAndSetPrice()" required />
+        <input type="number" name="stock" id="stockInput" min='0.1' placeholder="In Stock" oninput="formatAndSetStock()"
           required />
         <input type="text" name="expire-date" id="expireDateInput" placeholder="Expire Date" oninput="updateCard()"
           onfocus="(this.type='date')" onblur="(this.type='text')" min="" />

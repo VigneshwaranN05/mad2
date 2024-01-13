@@ -82,13 +82,30 @@ function updateCard() {
 }
 
 function formatAndSetStock() {
-  var stockInput = document.getElementById("stockInput");
-  if (stockInput) {
-    // Format the stock value to allow only two decimal places
-    var formattedStock = stockInput.value.replace(/(\.\d{2})\d+/g, "$1");
-    stockInput.value = formattedStock;
-    updateCard(); // Call updateCard after formatting the stock value
+  const stockInput = document.getElementById("stockInput");
+  var stockValue = stockInput.value.toString();
+  if (stockValue.includes(".")) {
+    var parts = stockValue.split(".");
+    if (parts[1].length > 2) {
+      parts[1] = parts[1].substring(0, 2);
+    }
+
+    stockInput.value = parts.join(".");
   }
+  updateCard();
+}
+
+function formatAndSetPrice() {
+  const priceInput = document.getElementById("priceInput");
+  var priceValue = priceInput.value.toString();
+  if (priceValue.includes(".")) {
+    var parts = priceValue.split(".");
+    if (parts[1].length > 2) {
+      parts[1] = parts[1].substring(0, 2);
+    }
+    priceInput.value = parts.join(".");
+  }
+  updateCard();
 }
 
 function handleImage() {

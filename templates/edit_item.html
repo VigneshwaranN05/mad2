@@ -18,8 +18,6 @@
       {% if current_user.is_authenticated and current_user.role == "Manager"
       %}
       <li><a href="/store">Store</a></li>
-      {% endif %} {% if current_user.role == "Manager" %}
-      <li><a href="/analytics">Analytics</a></li>
       {% endif %}
     </div>
     <div class="nav-buttons">
@@ -72,10 +70,9 @@
       </div>
     </div>
     <div class="input-bars">
-      <form action='/add_item' method="post" enctype="multipart/form-data">
+      <form action='/edit_item/{{product.id}}' method="post" enctype="multipart/form-data">
 
-        <input type="file" name="file" id="fileInput" accept="image/png, image/jpeg" onchange="handleImage()"
-          required />
+        <input type="file" name="file" id="fileInput" accept="image/png, image/jpeg" onchange="handleImage()" />
         <input type="text" name="product-name" id="productNameInput" value="{{product.name}}" oninput="updateCard()"
           required />
         <select name="product-category" id="categoryInput" value="{{product.categories.name}}" oninput="updateCard()"
@@ -90,29 +87,18 @@
         {% endfor %}
         </select>
         <select name="unit" id="unitInput" placeholder="Unit" oninput="updateCard()" required />
-        {% if product.unit == "Kg" %}
-        <option value="Kg" selected>Kg</option>
-        {% else %}
-        <option vlaue="Kg">Kg</option>
-        {% endif %}
-        {% if product.unit == "Liter" %}
-        <option value="Liter" selected>Liter</option>
-        {% else %}
-        <option value="Liter">Liter</option>
-        {% endif %}
-        {% if product.unit == "Pocket" %}
-        <option value="Pocket" selected>Pocket</option>
-        {% else %}
-        <option value="Pocket">Pocket</option>
-        {% endif %}
+        <option value="Kg" {% if product.unit=="Kg" %} selected {% endif %}>Kg</option>
+        <option value="Liter" {% if product.unit=="Liter" %} selected {% endif %}>Liter</option>
+        <option value="Pocket" {% if product.unit=="Pocket" %} selected {% endif %}>Pocket</option>
         </select>
-        <input type="number" name="price" id="priceInput" value="{{product.price}}" oninput="updateCard()" required />
-        <input type="number" name="stock" id="stockInput" value="{{product.stock}}" oninput="formatAndSetStock()"
-          required />
+        <input type="number" name="price" id="priceInput" step='any' min='0.1' max='10000' value="{{product.price}}"
+          oninput="formatAndSetPrice()" required />
+        <input type="number" name="stock" id="stockInput" step='any' min='0.1' value="{{product.stock}}"
+          oninput="formatAndSetStock()" required />
         <input type="text" name="expire-date" id="expireDateInput" value="{{product.expiry_date}}"
           oninput="updateCard()" onfocus="(this.type='date')" onblur="(this.type='text')" min="" />
         <div class="add-button">
-          <button type="submit">Add Item</button>
+          <button type="submit">Update Item</button>
         </div>
       </form>
     </div>

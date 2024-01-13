@@ -248,6 +248,8 @@ nav .menu-icon {
   margin: 10vh;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .request-container form select,
@@ -255,6 +257,7 @@ nav .menu-icon {
   margin: 10px 0px;
   padding: 10px;
   border-radius: 20px;
+  width: 100%;
 }
 
 .request-container #request-message {
@@ -262,6 +265,37 @@ nav .menu-icon {
   padding: 10px;
   height: 200px;
   width: 350px;
+}
+
+.request-container #submit_button {
+  margin: 10px;
+  padding: 10px 15px;
+  border-radius: 20px;
+  width: 50%;
+  color: white;
+  border: double 2px transparent;
+  background-image: linear-gradient(to right, black, black),
+    linear-gradient(to right, #00c9ff, #92fe9d);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.request-container #submit_button:hover {
+  color: black;
+  background-image: linear-gradient(to right, #00c9ff, #92fe9d),
+    linear-gradient(to right, #00c9ff, #92fe9d);
+}
+.message p {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  padding: 10px;
+  color: white;
+  border-radius: 5px;
+  z-index: 100;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.5s ease-in-out;
+  opacity: 1;
 }
 @keyframes slideIn {
   0% {

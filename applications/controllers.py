@@ -127,7 +127,11 @@ def approve(id):
 
         if request_made is not None:
             request_type = request_made.request_type
-
+            
+            if request_type not in ["new_manager" , "new_category" , "remove_item"]:
+                session['message'] = f"Wrong request_type {request_type}"
+                session['message_color'] = "red"
+                return redirect('/request')
             if request_type == "new_manager":
                 try:
                     manager_id = int(request_made.request_value)
@@ -162,7 +166,7 @@ def approve(id):
                     session['message_color'] = 'orangered'
                     return redirect('/requests')
 
-            elif request_type == "remove_product":
+            elif request_type == "remove_item":
                 try:
                     product_id = int(request_made.request_value)
                     productToRemove = Product.query.filter(Product.id == product_id).first()
@@ -264,21 +268,6 @@ def store():
         session['message_color'] = 'green'
         return redirect('/login')
 
-@controllers_bp.route("/delete_item/<product_id>",methods=['GET','POST'])
-@login_required
-def delete_item(product_id):
-    if current_user.is_authenticated and current_user.role == "Manager":
-        manager = User.query.filter_by(email=current_user.email).first()
-        if manager is not None and manager.role == "Manager" :
-            if request.method == "POST" and manager.approved:
-                product = Product.query.filter_by(id = product_id).first()
-                db.session.delete(product)
-                db.session.commit()
-                return redirect("/store")
-            else:
-                return redirect("/store")
-    return redirect("/")
-
 @controllers_bp.route("/edit_item/<product_id>", methods=["GET", "POST"])
 @login_required
 def edit_product(product_id):
@@ -293,12 +282,12 @@ def edit_product(product_id):
                 return render_template('edit_item.html',message = message  , message_color= message_color,
                                        product = product , categories = categories)
             elif request.method == "POST" and manager.approved:
-                name = request.form["name"]
-                category = request.form.get("category", None)
+                name = request.form["product-name"]
+                category = request.form.get("product-category", None)
                 unit = request.form.get("unit", None)
                 stock = request.form.get("stock", None)
                 price = request.form.get("price", None)
-                date_str = request.form.get('date' , None)
+                date_str = request.form.get('expire-date' , None)
                 if name:
                     name = name.capitalize()
                     product.name = name
@@ -327,7 +316,7 @@ def edit_product(product_id):
                 db.session.commit()
 
                 # Handle image upload separately
-                img = request.files.get("img")
+                img = request.files["file"]
                 if img:
                     img.save("./static/products/" + str(product.id) + ".png")
 
@@ -388,26 +377,35 @@ def add_item():
 def new_request():
     if current_user.is_authenticated and current_user.role == "Manager" and current_user.approved:
         if request.method == 'GET':
+            request_args = request.args.get('request-select')
+            if request_args not in ["new_category" , "remove_item"]:
+                request_args = None
+
+            message = session.pop('message',None)
+            message_color = session.pop('message_color',None)
             managers_products= Product.query.filter(Product.owner_id == current_user.id).with_entities(Product.id , Product.name).all()
-            return render_template('new_request.html', products = managers_products)
+            return render_template('new_request.html', products = managers_products, request_args = request_args,
+                                   message = message , message_color = message_color)
         elif request.method == "POST":
             request_type = request.form.get('request-select')
             request_message = request.form.get('request-message')
-            if request_type not in ['new_category' , 'remove_product']:
+            request_value = None
+            if request_type not in ['new_category' , 'remove_item']:
                 session['message'] = f"Wrong request type {request_type}"
                 session['message_color'] = 'orangered'
             elif request_type == "new_category":
                 request_value = request.form.get('category-name')
-            elif request_type == "remove_product":
+            elif request_type == "remove_item":
                 request_value = request.form.get('product-select')
 
-            newRequest = Request(request_by = current_user.id , request_type = request_type,
+            if request_value is not None:
+                newRequest = Request(request_by = current_user.id , request_type = request_type,
                                  request_value = request_value , took_action = False, 
                                  request_message = request_message)
-            db.session.add(newRequest)
-            db.session.commit()
-            session['message'] = "Request is sent to admin"
-            session['message_color'] = "green"
+                db.session.add(newRequest)
+                db.session.commit()
+                session['message'] = "Request is sent to admin"
+                session['message_color'] = "green"
             return redirect('/new_request')
     else:
         return redirect('/login')
@@ -548,88 +546,3 @@ def history():
         session['message_color'] = "green"
         return redirect('/login')
 
-@controllers_bp.route('/analytics',methods=['GET'])
-
-def analytics():
-    if current_user.is_authenticated and current_user.role == "Manager":
-        manager = User.query.filter_by(email=session['email']).first()
-        purchases = Purchases.query.filter_by(owner=manager.id)
-
-        data = {}
-        product_counts = {}
-        category_revenue = {}
-        daily_revenue = {}
-        end_date = datetime.today()
-        start_date = end_date - timedelta(days=10)
-
-        # Create a list of dates within the time frame
-        date_range = [start_date + timedelta(days=x) for x in range((end_date - start_date).days + 1)]
-
-        # Initialize the data dictionary with zeros for all dates in the range
-        for date in date_range:
-            data[date.date()] = 0
-            daily_revenue[date.date()] = 0
-
-        # Populate the data dictionary with actual purchase data
-        for purchase in purchases:
-            purchase_date = purchase.date_added
-            
-            if purchase_date >= start_date.date() :
-                product_name = purchase.product
-                category = Product.query.filter_by(name=product_name).first().category
-                if purchase_date in data:
-                    data[purchase_date] += purchase.count
-            
-                if product_name in product_counts:
-                    product_counts[product_name] += purchase.count
-                else:
-                    product_counts[product_name] = purchase.count 
-                if category not in category_revenue:
-                    category_revenue[category] = 0
-                category_revenue[category] += purchase.count * purchase.price
-                daily_revenue[purchase_date] += purchase.count * purchase.price
-        
-        product_names = list(product_counts.keys())
-        product_sold_counts = list(product_counts.values())
-
-        df = pd.DataFrame(list(data.items()), columns=['date', 'count'])
-        df['date'] = pd.to_datetime(df['date'])
-
-        df = df.sort_values(by='date')
-        plt.figure(figsize=(8, 6))
-        plt.plot(df['date'], df['count'], marker='o')
-        plt.xlabel('Date')
-        plt.ylabel("Number of Products Sold")
-        plt.title("Number of products sold over 10 days")
-        plt.savefig('./static/' + str(manager.id) + '1.png', format='png')
-        
-        plt.figure(figsize=(8,6))
-        plt.pie(product_sold_counts, labels=product_names , autopct='%1.1f%%',startangle=140 )
-        plt.title("Percentage of Products Sold Over 10 days")
-        plt.savefig('./static/'+str(manager.id) + '2.png', format='png')
-
-        df2 = pd.DataFrame(list(category_revenue.items()) , columns = ['Category', 'Revenue'])
-        plt.figure(figsize=(10,6))
-        plt.bar(df2['Category'] , df2['Revenue'] , color='skyblue')
-        plt.xlabel("Categories")
-        plt.ylabel('Revenue')
-        plt.title('Revenue by Category for 10 days')
-        plt.xticks(rotation=0, ha='right')
-        plt.savefig('./static/'+str(manager.id) + '3.png', format='png')
-
-        df3 = pd.DataFrame(list(daily_revenue.items()), columns=['date', 'revenue'])
-        df3['date'] = pd.to_datetime(df3['date'])
-        df3 = df3.sort_values(by='date')
-        plt.figure(figsize=(10, 6))
-        plt.bar(df3['date'], df3['revenue'], color='green')
-        plt.xlabel('Date')
-        plt.ylabel('Daily Revenue')
-        plt.title('Daily Revenue over the last 10 days')
-        plt.xticks(rotation=0, ha='right')
-        plt.savefig('./static/' + str(manager.id) + '4.png', format='png')
-
-        return render_template('analytics.html', username=session['username'], ismanager=session['manager'], signed=True, id=manager.manager_id)
-    else:
-        session['message'] = 'Login to Continue'
-        session['message_color'] = 'green'
-        return redirect('/login')

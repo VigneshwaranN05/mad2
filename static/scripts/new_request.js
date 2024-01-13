@@ -58,27 +58,44 @@ app.mount("#app");
 message.mount(".message");
 
 document.addEventListener("DOMContentLoaded", function () {
-  var request_select = document.getElementById("request-select");
-  var hidden_select = document.getElementById("hidden-select");
-  var hidden_input = document.getElementById("hidden-input");
-  var request_message = document.getElementById("request-message");
-  request_select.addEventListener("change", function () {
-    hidden_select.style.display =
-      request_select.value === "remove_item" ? "block" : "none";
-    hidden_input.style.display =
-      request_select.value === "new_category" ? "block" : "none";
+  // Function to update the visibility and requirements
+  function updateFormElements() {
+    hiddenSelect.style.display =
+      requestSelect.value === "remove_item" ? "block" : "none";
+    hiddenInput.style.display =
+      requestSelect.value === "new_category" ? "block" : "none";
 
-    hidden_select.required = request_select.value === "remove_item";
-    hidden_input.required = request_select.value === "new_category";
+    hiddenSelect.required = requestSelect.value === "remove_item";
+    hiddenInput.required = requestSelect.value === "new_category";
+
+    // Trigger the change event when the display state changes
+    if (hiddenSelect.style.display === "block") {
+      hiddenSelect.dispatchEvent(new Event("change"));
+    } else if (hiddenInput.style.display === "block") {
+      hiddenInput.dispatchEvent(new Event("change"));
+    }
+  }
+
+  var requestSelect = document.getElementById("request-select");
+  var hiddenSelect = document.getElementById("hidden-select");
+  var hiddenInput = document.getElementById("hidden-input");
+  var requestMessage = document.getElementById("request-message");
+
+  // Call the function on initial load
+  updateFormElements();
+
+  requestSelect.addEventListener("change", function () {
+    // Call the function when the requestSelect value changes
+    updateFormElements();
   });
 
-  hidden_input.addEventListener("input", function () {
-    var inputValue = hidden_input.value;
-    request_message.value = `Add cateogry ${inputValue}`;
+  hiddenInput.addEventListener("input", function () {
+    var inputValue = hiddenInput.value;
+    requestMessage.value = `Add category ${inputValue}`;
   });
 
-  hidden_select.addEventListener("change", function () {
-    var selectedOption = productSelect.options[productSelect.selecttedIndex];
+  hiddenSelect.addEventListener("change", function () {
+    var selectedOption = hiddenSelect.options[hiddenSelect.selectedIndex];
     var productId = selectedOption.value;
     var productName = selectedOption.text;
     requestMessage.value = `Remove product ${productName} ID:${productId}`;

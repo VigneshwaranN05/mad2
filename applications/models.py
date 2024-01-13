@@ -29,7 +29,7 @@ class Product(db.Model):
     name = db.Column(db.String(20), nullable=False)
     category = db.Column(db.Integer,db.ForeignKey('categories.id') , nullable=False)
     unit = db.Column(db.String(8),nullable = False)
-    stock = db.Column(db.Integer, nullable=False)
+    stock = db.Column(db.Float, nullable=False)
     price = db.Column(db.Float, nullable=False)
     expiry_date = db.Column(db.Date, nullable=False)
     orders = db.relationship("Orders", backref='product' ,lazy = True)
@@ -46,7 +46,7 @@ class Orders(db.Model):
     id = db.Column(db.Integer, primary_key = True , autoincrement = True)
     purchase_id = db.Column(db.Integer , db.ForeignKey('purchases.id') , nullable = False)
     product_id = db.Column(db.Integer , db.ForeignKey('product.id') , nullable = False)
-    quantity = db.Column(db.Integer , nullable = False)
+    quantity = db.Column(db.Float, nullable = False)
     sold_price = db.Column(db.Float , nullable = False)
 
 class Request(db.Model):
@@ -57,7 +57,7 @@ class Request(db.Model):
     took_action = db.Column(db.Boolean , nullable = False, default = False)
     #request_value is for handling the postprocess of request
     #new_manager -> User.id is the request_value
-    #new_category -> Category name is the request_value
+    # new_category -> Category name is the request_value
     #remove_products -> Product.id is the request_value
     request_value = db.Column(db.String(20) , nullable = False)
     request_message = db.Column(db.String(200) , nullable = False)

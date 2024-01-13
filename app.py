@@ -31,7 +31,7 @@ def create_admin_manager():
     if not admin_manager:
         password_hased = passhash.hash('admin')
         new_admin_manager = User(name='admin' , email='admin@gmail.com', password=password_hased, role="Admin"
-                                 ,approved = 1)
+                                 ,approved = True)
 
         db.session.add(new_admin_manager)
         db.session.commit()

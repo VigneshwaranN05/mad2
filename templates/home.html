@@ -23,8 +23,6 @@
       <li><a href="/store">Store</a></li>
       {% endif %} {% if current_user.role == 'User' %}
       <li><a href="/history">History</a></li>
-      {% endif %} {% if current_user.role == "Manager" %}
-      <li><a href="/analytics">Analytics</a></li>
       {% endif %} {% if current_user.role == "Admin" %}
       <li><a href="/requests">Requests</a></li>
       {% endif %}
