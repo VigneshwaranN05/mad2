@@ -306,7 +306,7 @@ nav .filter {
   top: 70px;
   margin-top: 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, 300px);
+  grid-template-columns: repeat(auto-fill, 250px);
   gap: 30px;
   justify-content: center; /* Center horizontally */
   align-items: center;
@@ -314,7 +314,7 @@ nav .filter {
 
 .card {
   box-shadow: 10px 10px 10px -4px skyblue;
-  max-width: 300px;
+  max-width: 240px;
   padding: 10px 10px 0px 10px;
   height: 100%;
   display: flex;
@@ -337,6 +337,7 @@ nav .filter {
   font-weight: 900;
   color: black;
   text-align: center;
+  color: #007fff;
 }
 
 .card form {
@@ -344,12 +345,16 @@ nav .filter {
   text-align: center;
   margin-bottom: 0px;
 }
+
+.card p {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .card button {
-  padding: 8px 10px;
   user-select: none;
+  padding: 8px;
   color: white;
-  margin-bottom: 0px;
-  margin-top: 5px;
   background-color: black;
   border: solid 2px skyblue;
   border-radius: 20px;
@@ -369,9 +374,8 @@ nav .filter {
 .card .image {
   border-radius: 10px;
   margin-bottom: 20px;
-  height: 180px;
+  height: 200px;
   width: 100%;
-  object-fit: cover;
   border-color: black;
 }
 
@@ -381,7 +385,7 @@ nav .filter {
 }
 
 .card input {
-  width: 90%;
+  width: 50%;
   border: solid 2px black;
   border-radius: 10px;
   padding: 4px;

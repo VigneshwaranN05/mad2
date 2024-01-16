@@ -56,22 +56,14 @@ def home():
     
 @controllers_bp.route('/category' , methods=['GET'])
 def category():
-    unique_categories = db.session.query(Product.category).distinct().all()
-    unique_categories = [category[0] for category in unique_categories]
-    products_by_category = {}
-    for category in unique_categories:
-        products = Product.query.filter_by(category=category).first()
-        products_by_category[category] = products.id
-    if current_user.is_authenticated:
-        return render_template("category.html", products_by_category = products_by_category) 
-    else :
-        return render_template("category.html", products_by_category=products_by_category)
+    if request.method == 'GET':
+        categories = Categories.query.all()
+        return render_template('category.html', categories = categories)
 
 @controllers_bp.route("/category_need/<category_need>", methods=['GET','POST'])
 @login_required
 def category_need(category_need):
-    unique_categories = db.session.query(Product.category).distinct().order_by(Product.category).all()
-    unique_categories =  [category[0] for category in unique_categories]
+    unique_categories = Categories.query.all()
     product_need = Product.query.filter_by(category=category_need).all()
     today = date.today()
     if current_user.is_authenticated:
@@ -377,15 +369,16 @@ def add_item():
 def new_request():
     if current_user.is_authenticated and current_user.role == "Manager" and current_user.approved:
         if request.method == 'GET':
-            request_args = request.args.get('request-select')
-            if request_args not in ["new_category" , "remove_item"]:
-                request_args = None
+            select_args = request.args.get('request-select')
+            input_args = request.args.get('request-input')
+            if select_args not in ["new_category" , "remove_item"]:
+                select_args = None
 
             message = session.pop('message',None)
             message_color = session.pop('message_color',None)
             managers_products= Product.query.filter(Product.owner_id == current_user.id).with_entities(Product.id , Product.name).all()
-            return render_template('new_request.html', products = managers_products, request_args = request_args,
-                                   message = message , message_color = message_color)
+            return render_template('new_request.html', products = managers_products, select_args = select_args,
+                                   input_args=input_args, message = message , message_color = message_color)
         elif request.method == "POST":
             request_type = request.form.get('request-select')
             request_message = request.form.get('request-message')

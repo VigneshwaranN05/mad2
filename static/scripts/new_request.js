@@ -89,15 +89,18 @@ document.addEventListener("DOMContentLoaded", function () {
     updateFormElements();
   });
 
+  function updateRequestMessage() {
+    var selectedOption = hiddenSelect.options[hiddenSelect.selectedIndex];
+    var productId = selectedOption.value;
+    var productName = selectedOption.text;
+    requestMessage.value = `Remove product ${productName} ID:${productId}`;
+  }
   hiddenInput.addEventListener("input", function () {
     var inputValue = hiddenInput.value;
     requestMessage.value = `Add category ${inputValue}`;
   });
 
-  hiddenSelect.addEventListener("change", function () {
-    var selectedOption = hiddenSelect.options[hiddenSelect.selectedIndex];
-    var productId = selectedOption.value;
-    var productName = selectedOption.text;
-    requestMessage.value = `Remove product ${productName} ID:${productId}`;
-  });
+  hiddenSelect.addEventListener("change", updateRequestMessage);
+
+  updateRequestMessage();
 });

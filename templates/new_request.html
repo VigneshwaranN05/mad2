@@ -65,15 +65,15 @@
       <form method="post">
         <select id='request-select' name='request-select' required>
           <option value="" disabled selected>Request Type</option>
-          <option value="new_category" {% if request_args=="new_category" %} selected {% endif %}>New Category</option>
-          <option value="remove_item" {% if request_args=="remove_item" %} selected {% endif %}>Remove-item</option>
+          <option value="new_category" {% if select_args=="new_category" %} selected {% endif %}>New Category</option>
+          <option value="remove_item" {% if select_args=="remove_item" %} selected {% endif %}>Remove-item</option>
         </select>
         <input type="text" id='hidden-input' name="category-name" maxlength='20' placeholder="Category Name"
           style="display: none;">
         <select id='hidden-select' name='product-select' style="display: none;">
-          <option value="" disabled selected>Product to Remove</option>
+          <option value="" disabled {% if not input_args %} selected {% endif %}>Product to Remove</option>
           {% for product in products %}
-          <option value="{{product.id}}">{{product.name}}</option>
+          <option value="{{product.id}}" {% if input_args==product.id %} selected {% endif %}>{{product.name}}</option>
           {% endfor %}
           <textarea maxlength="100" name='request-message' id="request-message"
             placeholder="Add message to admin (max 100 letters)" /></textarea>
