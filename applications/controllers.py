@@ -23,35 +23,6 @@ def home():
             message_color = session.pop('message_color', None)
             return render_template('home.html',today=today,products=products , 
                                    message = message , message_color = message_color )
-        elif request.method == "POST":
-            product_id , count = request.form['product'], request.form['count']
-            product = Product.query.filter_by(id = product_id).first()
-
-            cart = json.loads(session['cart'])
-            if product_id in cart:
-                
-                try :
-                    current = int(count) + int(current[product_id])
-                except :
-                    current = {}
-                    current[product_id] = 0
-                finally :
-                    current = int(count) + int(current[product_id])
-                if current <= int(product.stock):
-                    cart[product_id] = str(int(current))
-                else:
-                    session['message'] = "Out of stock"
-                    session['message_color'] = 'orangered'
-                    return redirect('/')
-            else:
-                current = int(count)
-                if current <= int(product.stock):
-                    cart[product_id] = count
-            
-            session['cart'] = json.dumps(cart)
-            session['message'] = "Producted Added to cart"
-            session['message_color'] = 'green'
-            return redirect('/')
     return render_template('home.html',today=today,products=products)
     
 @controllers_bp.route('/category' , methods=['GET'])
@@ -63,47 +34,54 @@ def category():
 @controllers_bp.route("/category_need/<category_need>", methods=['GET','POST'])
 @login_required
 def category_need(category_need):
-    unique_categories = Categories.query.all()
-    product_need = Product.query.filter_by(category=category_need).all()
-    today = date.today()
     if current_user.is_authenticated:
+        categories = Categories.query.all()
+        products_need = Product.query.filter_by(category=int(category_need)).all()
+        today = date.today()
         if request.method == 'GET':
             message = session.pop('message',None)
             message_color = session.pop('message_color', None)
-            return render_template('category_need.html',today=today,unique_categories= unique_categories , category_need=category_need , product_need = product_need , message = message , message_color = message_color)
-        else:
-            product_id , count = request.form['product'], request.form['count']
-            product = Product.query.filter_by(id = product_id).first()
-
-            cart = json.loads(session['cart'])
-            if product_id in cart:
-                
-                try :
-                    current = int(count) + int(current[product_id])
-                except :
-                    current = {}
-                    current[product_id] = 0
-                finally :
-                    current = int(count) + int(current[product_id])
-                if current <= int(product.stock):
-                    cart[product_id] = str(int(current))
-                else:
-                    session['message'] = "Out of stock"
-                    session['message_color'] = 'orangered'
-                    return redirect(url_for('controllers.category_need',category_need=category_need))
-            else:
-                current = int(count)
-                if current <= int(product.stock):
-                    cart[product_id] = count
-            
-            session['cart'] = json.dumps(cart)
-            session['message'] = "Producted Added to cart"
-            session['message_color'] = 'green'
-            return redirect(url_for('controllers.category_need', category_need = category_need))
+            return render_template('category_need.html',today=today,categories= categories 
+                                   , category_need=int(category_need) , products = products_need , 
+                                   message = message , message_color = message_color)
     else:
         session['message'] = "Login to continue"
         session['message_color'] = 'green'
         return redirect('/login')
+
+#id -> product_id
+@controllers_bp.route('/add_to_cart/<int:product_id>' , methods=['POST'])
+@login_required
+def add_to_cart(product_id):
+    if current_user.is_authenticated and current_user.role == "User":
+        if request.method == 'POST':
+            try: 
+                product_requested = Product.query.get(product_id)
+                quantity_requested = int(request.form.get('count'))
+                user_id = current_user.id
+                if quantity_requested <= product_requested.stock:
+                    new_cart_entry = Cart(
+                            user_id = user_id,
+                            product_id = product_requested.id,
+                            quantity = quantity_requested,
+                            price = product_requested.price,
+                            date = datetime.now()
+                    )
+                    
+                    db.session.add(new_cart_entry)
+                    db.session.commit()
+                    session['message'] = f"Product {product_requested.name} added to cart"
+                    session['message_color'] = '#6495ed'
+                    return redirect(request.referrer or '/')
+
+            except Exception as e:
+                session['message'] = f"Unable {e}"
+                session['message_color'] = 'red'
+                return redirect(request.referrer or '/')
+
+            return redirect(request.referrer or '/')
+        else:
+            return redirect(request.referrer or '/')
 
 #getting the request id from GET method
 @controllers_bp.route('/approve/<int:id>')
@@ -516,7 +494,14 @@ def logout():
 def cart():
     if current_user.is_authenticated and current_user.role == "User":
         user_cart = Cart.query.filter_by(user_id = current_user.id).all()
-        return render_template("cart.html" , user_cart = user_cart)
+        userCartByDate = {}
+        for product in user_cart :
+            cart_date = product.date
+            if cart_date not in userCartByDate :
+                userCartByDate[cart_date] = []
+            userCartByDate[cart_date].append(product) 
+        print(f"userCartByDate : {userCartByDate}")
+        return render_template("cart.html" ,userCartByDate = userCartByDate)
 
 @controllers_bp.route('/search',methods=['GET','POST'])
 def search():

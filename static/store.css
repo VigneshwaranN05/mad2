@@ -275,12 +275,12 @@ nav .menu-icon {
   padding: 10px;
   display: grid;
   justify-content: space-between;
-  grid-template-columns: repeat(auto-fill, 280px);
+  grid-template-columns: repeat(auto-fill, 240px);
   gap: 20px;
 }
 .card {
   box-shadow: 10px 10px 10px -4px skyblue;
-  max-width: 300px;
+  max-width: 240px;
   padding: 10px 10px 0px 10px;
   height: 100%;
   display: flex;

@@ -5,10 +5,21 @@
 }
 body {
   background: linear-gradient(to right, #232526, #414345);
-
+  color: white;
   font-family: Sans-Serif;
 }
 
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: white;
+}
+::-webkit-scrollbar-thumb {
+  background: skyblue;
+  border-radius : 20px;
+}
 nav {
   display: flex;
   flex-wrap: wrap;
@@ -124,57 +135,6 @@ nav .nav-buttons img:hover {
 nav .menu-icon {
   display: none;
   user-select: none;
-}
-
-nav .filter {
-  position: absolute;
-  right: 60px;
-  top: 20px;
-}
-
-.filter-options {
-  color: white;
-  background: linear-gradient(to right, #232526, #414345);
-  position: absolute;
-  top: 60px;
-  right: 0px;
-  width: 250px;
-  box-shadow: 0px 1px 2px 2px skyblue;
-  padding: 10px;
-  border-radius: 10px;
-  z-index: 1;
-  animation: dropdown 0.3s ease;
-}
-
-.filter-options label {
-  display: block;
-  margin: 5px 20px;
-}
-
-.filter-options p {
-  font-weight: 600;
-  margin: 10px 10px;
-}
-
-#apply-filter {
-  display: block;
-  margin: 10px auto;
-  color: white;
-  background:
-    linear-gradient(black, black) padding-box,
-    linear-gradient(to right, #00c9ff, #92fe9d) border-box;
-  border-radius: 20px;
-  border: 2px solid transparent;
-  padding: 5px 20px;
-  cursor: pointer;
-  font-weight: 800;
-}
-
-#apply-filter:hover {
-  color: black;
-  background:
-    linear-gradient(to right, #00c9ff, #92fe9d) padding-box,
-    linear-gradient(to right, #00c9ff, #92fe9d) border-box;
 }
 
 [v-cloak] {
@@ -294,15 +254,53 @@ nav .filter {
   transition: opacity 0.5s ease-in-out;
   opacity: 1;
 }
+.main {
+  padding : 20px 0;
+}
+
+.sidebar {
+  position : fixed;
+  z-index : 1;
+  top: 85px;
+  width : 180px;
+  height : 100%;
+  background-color : black;
+  color : white;
+  padding : 10px;
+  text-align : center;
+  overflow : scroll;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 20px 0;
+  font-weight : bold;
+}
+
+.sidebar li {
+  padding: 10px;
+  text-align: center;
+  margin : 2.2em 0;
+  padding-bottom : 5px;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  letter-spacing : 0.2em;
+}
+
+.sidebar .active, .sidebar li:hover {
+  border-bottom: 2px solid white;
+}
 
 .card-container {
-  top: 70px;
-  margin-top: 20px;
+  flex: 1;
+  padding: 20px;
+  margin-left :  180px;
   display: grid;
   grid-template-columns: repeat(auto-fill, 250px);
   gap: 30px;
-  justify-content: center; /* Center horizontally */
-  align-items: center;
 }
 
 .card {
@@ -383,6 +381,7 @@ nav .filter {
   border-radius: 10px;
   padding: 4px;
 }
+
 @keyframes slideIn {
   0% {
     right: 85px;
