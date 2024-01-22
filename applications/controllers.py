@@ -124,57 +124,59 @@ def id_and_date(request):
 @login_required
 def checkout():
     if current_user.is_authenticated and current_user.role == "User":
-        # try:
-        user_id = current_user.id
-        product_id,cart_date = id_and_date(request)
-        if product_id:
-            #Get the product in the cart
-            product_in_cart = Cart.query.filter_by(user_id = user_id , 
-                                product_id = product_id).first()
-            if product_in_cart: 
-                new_purchase = Purchases(user_id = user_id)
-                new_order = Orders(purchases=new_purchase , product_id = product_id ,
-                                   quantity  = product_in_cart.quantity ,
-                                   sold_price = product_in_cart.price)
-                db.session.add(new_purchase)
-                db.session.add(new_order)
-                db.session.commit()
-                session['message'] = "Thanks for purchasing"
-                session['message_color'] = 'green'
-                return redirect(request.referrer or '/')
+        try:
+            user_id = current_user.id
+            product_id,cart_date = id_and_date(request)
+            if product_id:
+                #Get the product in the cart
+                product_in_cart = Cart.query.filter_by(user_id = user_id , 
+                                    product_id = product_id).first()
+                if product_in_cart: 
+                    new_purchase = Purchases(user_id = user_id)
+                    new_order = Orders(purchases=new_purchase , product_id = product_id ,
+                                       quantity  = product_in_cart.quantity ,
+                                       sold_price = product_in_cart.price)
+                    db.session.add(new_purchase)
+                    db.session.add(new_order)
+                    db.session.delete(product_in_cart)
+                    db.session.commit()
+                    session['message'] = "Thanks for purchasing"
+                    session['message_color'] = 'green'
+                    return redirect(request.referrer or '/')
+                else:
+                    session['message'] = "Unable to place the order"
+                    session['message_color'] = 'orange'
+                    return redirect(request.referrer or '/')
+                
+            elif cart_date:
+                #Get a list of product with the date {cart_date}
+                products_in_cart = Cart.query.filter_by(user_id = user_id,
+                                                       date = cart_date).all()
+                print(f"Products by date : {products_in_cart}"        )
+                if products_in_cart:
+                    new_purchase = Purchases(user_id = user_id)
+                    for product in products_in_cart:
+                        new_order = Orders(purchases = new_purchase ,
+                                           product_id  = product.product_id,
+                                           quantity = product.quantity,
+                                           sold_price = product.price)
+                        db.session.add(product)
+                        db.session.delete(product)
+                    db.session.add(new_purchase)
+                    db.session.commit()
+                    session['message'] = "Thanks for purchasing "
+                    session['message_color'] = 'green'
+                    return redirect(request.referrer or '/')
+                
             else:
-                session['message'] = "Unable to place the order"
-                session['message_color'] = 'orange'
-                return redirect(request.referrer or '/')
-            
-        elif cart_date:
-            #Get a list of product with the date {cart_date}
-            products_in_cart = Cart.query.filter_by(user_id = user_id,
-                                                   date = cart_date).all()
-            print(f"Products by date : {products_in_cart}"        )
-            if products_in_cart:
-                new_purchase = Purchases(user_id = user_id)
-                for product in products_in_cart:
-                    new_order = Orders(purchases = new_purchase ,
-                                       product_id  = product.product_id,
-                                       quantity = product.quantity,
-                                       sold_price = product.price)
-                    db.session.add(product)
-                db.session.add(new_purchase)
-                db.session.commit()
-                session['message'] = "Thanks for purchasing "
-                session['message_color'] = 'green'
-                return redirect(request.referrer or '/')
-            
-        else:
-            session['message'] = "Not able to process the request"
-            session['message_color'] = 'red'
-            return redirect(request.referrer or '/') 
-        # except Exception as e:
-        #     print(f"Error while placing the order {e}")
-        #     session['message'] = 'Unable to proceess the request'
-        #     session['message_color'] = 'red'
-        #     return redirect(request.referrer or '/')
+                session['message'] = "Not able to process the request"
+                session['message_color'] = 'red'
+                return redirect(request.referrer or '/') 
+        except Exception as e:
+             print(f"Error while placing the order {e}")
+             session['message'] = 'Unable to proceess the request'
+             session['message_color'] = 'red'
+             return redirect(request.referrer or '/')
             
 # date and id->product_id are the request parameters to remove the product
 @controllers_bp.route('/remove_from_cart', methods=['GET'])
@@ -680,9 +682,15 @@ def search():
 @login_required
 def history():
     if current_user.is_authenticated and current_user.role == "User": 
-        user = User.query.filter_by(email=session['email']).first()
-        history = Purchases.query.filter_by(customer = user.id).all()
-        return render_template('history.html',username=session['username'],signed = True, ismanager=session['manager'],history = history)
+        user = User.query.filter_by(email=current_user.email).first()
+        purchases_user = Purchases.query.filter_by(user_id= user.id).all()
+        grouped_orders = {}
+        for purchase in purchases_user:
+            orders = Orders.query.filter_by(purchase_id = purchase.id).all()
+            grouped_orders[purchase] = orders
+        message= session.pop('message' , None)
+        message_color = session.pop('message_color' , None)
+        return render_template('history.html',message = message , message_color = message_color,history = grouped_orders)
     else:
         session['message'] = "Login to continue"
         session['message_color'] = "green"
