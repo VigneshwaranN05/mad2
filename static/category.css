@@ -3,6 +3,7 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   background: linear-gradient(to right, #232526, #414345);
 
@@ -35,6 +36,7 @@ nav .nav-items {
 nav .nav-items li {
   padding: 0 18px;
 }
+
 nav .nav-items li a {
   font-size: 20px;
   user-select: none;
@@ -72,6 +74,7 @@ nav .nav-buttons {
   display: flex;
   list-style: none;
 }
+
 nav .nav-buttons li {
   padding: 0 5px;
   margin-left: 15px;
@@ -128,6 +131,7 @@ nav .nav-buttons img {
 nav .nav-buttons img:hover {
   transform: scale(0.8);
 }
+
 nav .menu-icon {
   display: none;
   user-select: none;
@@ -136,6 +140,7 @@ nav .menu-icon {
 [v-cloak] {
   display: none;
 }
+
 .search-icon {
   display: block;
 }
@@ -156,6 +161,7 @@ nav .menu-icon {
   align-items: center;
   margin-bottom: 10px;
 }
+
 .floating-screen {
   padding: 20px;
   background-color: linear-gradient(to right, #232526, #414345);
@@ -234,6 +240,7 @@ nav .menu-icon {
 .dropdown-content b {
   font-size: 18px;
 }
+
 .dropdown-content a:hover {
   background-color: #f2f2f2;
 }
@@ -252,28 +259,29 @@ nav .menu-icon {
 }
 
 .for-admin {
-  margin : 20px 10px;
-  padding : 0px 20px;
+  margin: 20px 10px;
+  padding: 0px 20px;
 }
+
 .for-admin a {
-  
-  padding : 8px 12px;
-  text-decoration : none;
-  text-align : center;
-  color : black;
-  background : linear-gradient(to right, #74ebd5 , #acb6e5 ) padding-box,
-  linear-gradient(to right , #74ebd5 , #acb6e5) border-box;
+
+  padding: 8px 12px;
+  text-decoration: none;
+  text-align: center;
+  color: black;
+  background: linear-gradient(to right, #74ebd5, #acb6e5) padding-box,
+    linear-gradient(to right, #74ebd5, #acb6e5) border-box;
   border: 2px solid transparent;
-  transition : all 0.2s
-  cursor : pointer;
-  border-radius : 20px;
+  transition: all 0.2s cursor: pointer;
+  border-radius: 20px;
 }
 
 .for-admin a:hover {
-  color : white;
-  background : linear-gradient(to right , black , black) padding-box,
-  linear-gradient(to right , #74ebd5 , #acb6e5) border-box;
+  color: white;
+  background: linear-gradient(to right, black, black) padding-box,
+    linear-gradient(to right, #74ebd5, #acb6e5) border-box;
 }
+
 .category-list {
   top: 80px;
   margin: 10px;
@@ -306,20 +314,22 @@ nav .menu-icon {
 }
 
 .category-list .card {
-  height: 300px;
-  width: 250px;
+  height: 200px;
+  width: 220px;
   border-radius: 10px;
 }
 
 .category-list .card img {
   border-radius: 20px;
-  width: 240px;
-  height: 250px;
+  width: 210px;
+  height: 150px;
 }
+
 @keyframes slideIn {
   0% {
     right: 85px;
   }
+
   100% {
     right: 125px;
   }
@@ -329,15 +339,18 @@ nav .menu-icon {
   0% {
     top: 50px;
   }
+
   100% {
     top: 60px;
   }
 }
+
 @media screen and (max-width: 830px) {
   nav {
     margin: 0px;
     padding: 0px;
   }
+
   nav .nav-buttons {
     padding: 0px;
   }
@@ -347,13 +360,16 @@ nav .menu-icon {
     top: 10px;
     left: 40px;
   }
+
   nav .nav-buttons svg {
     margin: 0px;
     top: 20px;
   }
+
   nav .nav-buttons li a {
     padding: 6px 6px;
   }
+
   nav .menu-icon img {
     position: absolute;
     top: 20px;
@@ -397,6 +413,7 @@ nav .menu-icon {
   nav .menu-icon.active img {
     border: 4px solid skyblue;
   }
+
   nav .nav-items li {
     line-height: 40px;
     margin: 30px 30px;

@@ -100,9 +100,9 @@
       </p>
       <hr />
       {% if current_user.is_authenticated and current_user.role == "User" %}
-      <form method="POST">
+      <form action='/add_to_cart/{{product.id}}' method="POST">
         <p>
-          <input type="number" name="count" min="1" max="100" placeholder="Qunatity" />
+          <input type="number" name="count" min="0.1" max="{{product.stock}}" step="any" placeholder="Qunatity" />
           <button>Add to cart</button>
         </p>
       </form>

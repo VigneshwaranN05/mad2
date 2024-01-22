@@ -65,7 +65,6 @@ function updateCard() {
 
   // Get input values
   var productName = getValueById("productNameInput");
-  var category = getValueById("categoryInput");
   var price = getValueById("priceInput");
   var stock = getValueById("stockInput");
   var unit = getValueById("unitInput");
@@ -76,7 +75,6 @@ function updateCard() {
     "Price : " + price + (unit ? " per " + unit : "");
   document.getElementById("stock").innerText =
     "Stock : " + stock + " " + unit + (unit ? "(s)" : "");
-  document.getElementById("category").innerText = "Category: " + category;
   document.getElementById("expire-date").innerText =
     "Expire Date :" + expireDate + "\n(yyyy-mm-dd)";
 }

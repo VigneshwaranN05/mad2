@@ -3,6 +3,7 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   background: linear-gradient(to right, #232526, #414345);
   color: white;
@@ -13,13 +14,16 @@ body {
 ::-webkit-scrollbar {
   width: 5px;
 }
+
 ::-webkit-scrollbar-track {
   background: white;
 }
+
 ::-webkit-scrollbar-thumb {
   background: skyblue;
-  border-radius : 20px;
+  border-radius: 20px;
 }
+
 nav {
   display: flex;
   flex-wrap: wrap;
@@ -46,6 +50,7 @@ nav .nav-items {
 nav .nav-items li {
   padding: 0 18px;
 }
+
 nav .nav-items li a {
   font-size: 20px;
   user-select: none;
@@ -76,6 +81,7 @@ nav .nav-buttons {
   display: flex;
   list-style: none;
 }
+
 nav .nav-buttons li {
   padding: 0 5px;
   margin-left: 15px;
@@ -132,6 +138,7 @@ nav .nav-buttons img {
 nav .nav-buttons img:hover {
   transform: scale(0.8);
 }
+
 nav .menu-icon {
   display: none;
   user-select: none;
@@ -140,6 +147,7 @@ nav .menu-icon {
 [v-cloak] {
   display: none;
 }
+
 .search-icon {
   display: block;
 }
@@ -160,6 +168,7 @@ nav .menu-icon {
   align-items: center;
   margin-bottom: 10px;
 }
+
 .floating-screen {
   padding: 20px;
   background-color: linear-gradient(to right, #232526, #414345);
@@ -238,6 +247,7 @@ nav .menu-icon {
 .dropdown-content b {
   font-size: 18px;
 }
+
 .dropdown-content a:hover {
   background-color: #f2f2f2;
 }
@@ -254,50 +264,52 @@ nav .menu-icon {
   transition: opacity 0.5s ease-in-out;
   opacity: 1;
 }
+
 .main {
-  padding : 20px 0;
+  padding: 20px 0;
 }
 
 .sidebar {
-  position : fixed;
-  z-index : 1;
+  position: fixed;
+  z-index: 1;
   top: 85px;
-  width : 180px;
-  height : 100%;
-  background-color : black;
-  color : white;
-  padding : 10px;
-  text-align : center;
-  overflow : scroll;
+  width: 180px;
+  height: 100%;
+  background-color: grey;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  overflow: scroll;
 }
 
 .sidebar ul {
   list-style: none;
   padding: 20px 0;
-  font-weight : bold;
+  font-weight: bold;
 }
 
 .sidebar li {
   padding: 10px;
   text-align: center;
-  margin : 2.2em 0;
-  padding-bottom : 5px;
+  margin: 2.2em 0;
+  padding-bottom: 5px;
 }
 
 .sidebar a {
-  color: white;
+  color: black;
   text-decoration: none;
-  letter-spacing : 0.2em;
+  letter-spacing: 0.2em;
 }
 
-.sidebar .active, .sidebar li:hover {
-  border-bottom: 2px solid white;
+.sidebar .active,
+.sidebar li:hover {
+  border-bottom: 2px solid black;
 }
 
 .card-container {
   flex: 1;
   padding: 20px;
-  margin-left :  180px;
+  margin-left: 180px;
   display: grid;
   grid-template-columns: repeat(auto-fill, 250px);
   gap: 30px;
@@ -342,30 +354,31 @@ nav .menu-icon {
   justify-content: space-between;
   align-items: center;
 }
+
 .card button {
   user-select: none;
   padding: 8px;
   color: white;
   background-color: black;
-  border: solid 2px skyblue;
+  border: solid 2px #00c9ff;
   border-radius: 20px;
   cursor: pointer;
+  -webkit-transition: background-color 0.2s linear;
+  -ms-transition: background-color 0.2s linear;
+  transition: background-color 0.2s linear;
+}
+
+.card button:hover {
+  background-color: #00c9ff;
   -webkit-transition: background-color 300ms linear;
   -ms-transition: background-color 300ms linear;
   transition: background-color 300ms linear;
 }
 
-.card button:hover {
-  background-color: skyblue;
-  color: black;
-  -webkit-transition: background-color 300ms linear;
-  -ms-transition: background-color 300ms linear;
-  transition: background-color 300ms linear;
-}
 .card .image {
   border-radius: 10px;
   margin-bottom: 20px;
-  height: 200px;
+  height: 150px;
   width: 100%;
   border-color: black;
 }
@@ -386,6 +399,7 @@ nav .menu-icon {
   0% {
     right: 85px;
   }
+
   100% {
     right: 125px;
   }
@@ -395,15 +409,18 @@ nav .menu-icon {
   0% {
     top: 50px;
   }
+
   100% {
     top: 60px;
   }
 }
+
 @media screen and (max-width: 830px) {
   nav {
     margin: 0px;
     padding: 0px;
   }
+
   nav .nav-buttons {
     padding: 0px;
   }
@@ -413,13 +430,16 @@ nav .menu-icon {
     top: 10px;
     left: 40px;
   }
+
   nav .nav-buttons svg {
     margin: 0px;
     top: 20px;
   }
+
   nav .nav-buttons li a {
     padding: 6px 6px;
   }
+
   nav .menu-icon img {
     position: absolute;
     top: 20px;
@@ -463,6 +483,7 @@ nav .menu-icon {
   nav .menu-icon.active img {
     border: 4px solid skyblue;
   }
+
   nav .nav-items li {
     line-height: 40px;
     margin: 30px 30px;

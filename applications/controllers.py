@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template,url_for,request, session, redirect
+from flask import Blueprint, render_template, url_for, request, session, redirect
 from sqlalchemy import or_
 from applications.database import db
 from applications.models import *
@@ -6,73 +6,97 @@ from passlib.hash import pbkdf2_sha256 as passhash
 import json
 import pandas as pd
 from flask import jsonify
-from datetime import timedelta , datetime , date
+from datetime import timedelta, datetime, date
 import matplotlib.pyplot as plt
-from flask_login import login_user, login_required, logout_user , current_user
+from flask_login import login_user, login_required, logout_user, current_user
 
-controllers_bp = Blueprint('controllers' , __name__)
+controllers_bp = Blueprint('controllers', __name__)
 
-@controllers_bp.route('/', methods=['GET','POST'])
+
+@controllers_bp.route('/', methods=['GET', 'POST'])
 def home():
     products = Product.query.order_by(Product.id.desc()).all()
     today = date.today()
-    
+
     if current_user.is_authenticated:
         if request.method == "GET":
-            message = session.pop('message',None)
+            message = session.pop('message', None)
             message_color = session.pop('message_color', None)
-            return render_template('home.html',today=today,products=products , 
-                                   message = message , message_color = message_color )
-    return render_template('home.html',today=today,products=products)
-    
-@controllers_bp.route('/category' , methods=['GET'])
+            return render_template('home.html', today=today, products=products,
+                                   message=message, message_color=message_color)
+    return render_template('home.html', today=today, products=products)
+
+
+@controllers_bp.route('/category', methods=['GET'])
 def category():
     if request.method == 'GET':
         categories = Categories.query.all()
-        return render_template('category.html', categories = categories)
+        return render_template('category.html', categories=categories)
 
-@controllers_bp.route("/category_need/<category_need>", methods=['GET','POST'])
+
+@controllers_bp.route("/category_need/<category_need>", methods=['GET', 'POST'])
 @login_required
 def category_need(category_need):
     if current_user.is_authenticated:
         categories = Categories.query.all()
-        products_need = Product.query.filter_by(category=int(category_need)).all()
+        products_need = Product.query.filter_by(
+            category=int(category_need)).all()
         today = date.today()
         if request.method == 'GET':
-            message = session.pop('message',None)
+            message = session.pop('message', None)
             message_color = session.pop('message_color', None)
-            return render_template('category_need.html',today=today,categories= categories 
-                                   , category_need=int(category_need) , products = products_need , 
-                                   message = message , message_color = message_color)
+            return render_template('category_need.html', today=today, categories=categories, category_need=int(category_need), products=products_need,
+                                   message=message, message_color=message_color)
     else:
         session['message'] = "Login to continue"
         session['message_color'] = 'green'
         return redirect('/login')
 
-#id -> product_id
-@controllers_bp.route('/add_to_cart/<int:product_id>' , methods=['POST'])
+# id -> product_id
+
+
+@controllers_bp.route('/add_to_cart/<int:product_id>', methods=['POST'])
 @login_required
 def add_to_cart(product_id):
     if current_user.is_authenticated and current_user.role == "User":
         if request.method == 'POST':
-            try: 
+            try:
                 product_requested = Product.query.get(product_id)
-                quantity_requested = int(request.form.get('count'))
+                quantity_requested = float(request.form.get('count'))
                 user_id = current_user.id
-                if quantity_requested <= product_requested.stock:
-                    new_cart_entry = Cart(
-                            user_id = user_id,
-                            product_id = product_requested.id,
-                            quantity = quantity_requested,
-                            price = product_requested.price,
-                            date = datetime.now()
-                    )
-                    
-                    db.session.add(new_cart_entry)
-                    db.session.commit()
-                    session['message'] = f"Product {product_requested.name} added to cart"
-                    session['message_color'] = '#6495ed'
-                    return redirect(request.referrer or '/')
+                # get the details about existing product
+                product_in_cart = Cart.query.filter_by(
+                    user_id=user_id, product_id=product_requested.id).first()
+                print(f"Product in Cart : {product_in_cart}")
+                print(
+                    f" product_in_cart is not None : {product_in_cart is not None}")
+                if (product_in_cart is None):
+                    if quantity_requested <= product_requested.stock:
+                        new_cart_entry = Cart(
+                                user_id=user_id,
+                                product_id=product_requested.id,
+                                quantity=quantity_requested,
+                                price=product_requested.price,
+                                date=datetime.now()
+                        )
+
+                        db.session.add(new_cart_entry)
+                        db.session.commit()
+                        session['message'] = f"Product {product_requested.name} added to cart"
+                        session['message_color'] = '#6495ed'
+                        return redirect(request.referrer or '/')
+                    else:
+                        session['message'] = f"Product Out of stock"
+                        session['message_color'] = 'orange'
+                elif product_in_cart:
+                    if product_in_cart.quantity + quantity_requested <= product_requested.stock:
+                        product_in_cart.quantity += quantity_requested
+                        product_in_cart.price = product_requested.price
+                        product_in_cart.date = datetime.now()
+                        db.session.commit()
+                        session['message'] = f"Updated product {product_requested.name} in cart"
+                        session['message_color'] = '#6495ed'
+                        return redirect(request.referrer or '/')
 
             except Exception as e:
                 session['message'] = f"Unable {e}"
@@ -83,7 +107,119 @@ def add_to_cart(product_id):
         else:
             return redirect(request.referrer or '/')
 
-#getting the request id from GET method
+#function to get the id or the date from the request
+def id_and_date(request):
+    product_id = request.args.get('id')
+    cart_date = request.args.get('date')
+
+    if product_id is not None and cart_date is not None:
+        session['message'] = "Wrong Parameters"
+        session['message_color'] = 'red'
+        return redirect(request.referrer or '/')
+    
+    return product_id, cart_date
+        
+#date and id -> product_id are the request parameters for checking out.
+@controllers_bp.route('/checkout',methods=['GET'])
+@login_required
+def checkout():
+    if current_user.is_authenticated and current_user.role == "User":
+        # try:
+        user_id = current_user.id
+        product_id,cart_date = id_and_date(request)
+        if product_id:
+            #Get the product in the cart
+            product_in_cart = Cart.query.filter_by(user_id = user_id , 
+                                product_id = product_id).first()
+            if product_in_cart: 
+                new_purchase = Purchases(user_id = user_id)
+                new_order = Orders(purchases=new_purchase , product_id = product_id ,
+                                   quantity  = product_in_cart.quantity ,
+                                   sold_price = product_in_cart.price)
+                db.session.add(new_purchase)
+                db.session.add(new_order)
+                db.session.commit()
+                session['message'] = "Thanks for purchasing"
+                session['message_color'] = 'green'
+                return redirect(request.referrer or '/')
+            else:
+                session['message'] = "Unable to place the order"
+                session['message_color'] = 'orange'
+                return redirect(request.referrer or '/')
+            
+        elif cart_date:
+            #Get a list of product with the date {cart_date}
+            products_in_cart = Cart.query.filter_by(user_id = user_id,
+                                                   date = cart_date).all()
+            print(f"Products by date : {products_in_cart}"        )
+            if products_in_cart:
+                new_purchase = Purchases(user_id = user_id)
+                for product in products_in_cart:
+                    new_order = Orders(purchases = new_purchase ,
+                                       product_id  = product.product_id,
+                                       quantity = product.quantity,
+                                       sold_price = product.price)
+                    db.session.add(product)
+                db.session.add(new_purchase)
+                db.session.commit()
+                session['message'] = "Thanks for purchasing "
+                session['message_color'] = 'green'
+                return redirect(request.referrer or '/')
+            
+        else:
+            session['message'] = "Not able to process the request"
+            session['message_color'] = 'red'
+            return redirect(request.referrer or '/') 
+        # except Exception as e:
+        #     print(f"Error while placing the order {e}")
+        #     session['message'] = 'Unable to proceess the request'
+        #     session['message_color'] = 'red'
+        #     return redirect(request.referrer or '/')
+            
+# date and id->product_id are the request parameters to remove the product
+@controllers_bp.route('/remove_from_cart', methods=['GET'])
+@login_required
+def remove_from_cart():
+    if current_user.is_authenticated and current_user.role == "User":
+        try:
+            user_id = current_user.id
+
+            # Get parameters from the query string
+            product_id = request.args.get('id')
+            cart_date = request.args.get('date')
+
+            if product_id is not None and cart_date is not None:
+                session['message'] = "Unknown parameters"
+                session['message_color'] = "orange"
+            elif product_id:
+                try:
+                    product_in_cart = Cart.query.filter_by(
+                        user_id=user_id, product_id=int(product_id)).first()
+                    db.session.delete(product_in_cart)
+                    db.session.commit()
+                    session['message'] = f"Product removed from cart"
+                    session['message_color'] = 'orange'
+                except Exception as e:
+                    session['message'] = "Unable to remove product"
+                    print(f"Error : {e}")
+                    session['message_color'] = "red"
+            elif cart_date:
+                Cart.query.filter_by(date=cart_date, user_id=user_id).delete()
+                db.session.commit()
+                session['message'] = f"Cart for {cart_date} cleared"
+                session['message_color'] = 'orange'
+
+        except Exception as e:
+            session['message'] = f'Unable to remove {e}'
+            session['message_color'] = 'red'
+
+        return redirect(request.referrer or '/')
+    else:
+        session['message'] = "Login to Continue"
+        session['message_color'] = 'orange'
+        return redirect('/login')
+
+#get the request_id as argument
 @controllers_bp.route('/approve/<int:id>')
 @login_required
 def approve(id):
@@ -130,7 +266,7 @@ def approve(id):
                     db.session.commit()
                     session['message'] = f'New Category {category_name} created'
                     session['message_color'] = 'green'
-                    return redirect('/requests')
+                    return redirect(request.referrer or '/')
                 except Exception as e:
                     session['message'] = f'Error creating a category {category_name}: {str(e)}'
                     session['message_color'] = 'orangered'
@@ -192,6 +328,32 @@ def decline(id):
         session['message'] = "Login to Continue"
         session['message_color'] = 'orange'
         return redirect('/login')
+
+@controllers_bp.route('/add_category',methods=['GET','POST'])
+@login_required
+def add_category():
+    if current_user.is_authenticated and current_user.role == "Admin":
+        if request.method == 'GET':
+            message = session.pop('message', None)
+            message_color = session.pop('message_color' , None)
+            return render_template('add_category.html' , message=message ,
+                                   message_color = message_color)
+        elif request.method == 'POST':
+            try:
+                category_name = request.form.get('category-name').capitalize()
+                new_category = Categories(name = category_name)
+                db.session.add(new_category)
+                db.session.commit()
+                session['message'] = f"New Category {category_name} created"
+                session['message_color'] = 'green'
+                return redirect(request.referrer or '/')
+            except Exception as e:
+                session['message'] = f"Unable to create new category"
+                session['message_color'] = 'red'
+                return redirect(request.referrer or '/')
+
+    
+    return redirect(request.referrer or '/')
 @controllers_bp.route('/requests')
 @login_required
 def requests():
@@ -500,8 +662,10 @@ def cart():
             if cart_date not in userCartByDate :
                 userCartByDate[cart_date] = []
             userCartByDate[cart_date].append(product) 
-        print(f"userCartByDate : {userCartByDate}")
-        return render_template("cart.html" ,userCartByDate = userCartByDate)
+        message = session.pop('message',None)
+        message_color = session.pop('message_color',None)
+        return render_template("cart.html" ,userCartByDate = userCartByDate,
+                               message = message , message_color = message_color )
 
 @controllers_bp.route('/search',methods=['GET','POST'])
 def search():

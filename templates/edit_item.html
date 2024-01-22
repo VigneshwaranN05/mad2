@@ -63,7 +63,6 @@
         <p class="card-items" id="name" style="font-weight: bold">Name :</p>
         <p class="card-items" id="pricePerUnit">Price :</p>
         <p class="card-items" id="stock">Stock :</p>
-        <p class="card-items" id="category">Category:</p>
         <p class="card-items" id="expire-date">
           Expire Date : <br />(yyyy-mm-dd)
         </p>
@@ -77,7 +76,6 @@
           required />
         <select name="product-category" id="categoryInput" value="{{product.categories.name}}" oninput="updateCard()"
           required />
-        <option value="" disabled selected>Select Category</option>
         {% for category in categories %}
         {% if product.category == category.id %}
         <option value='{{category.id}}' selected>{{category.name}}</option>

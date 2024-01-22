@@ -19,11 +19,6 @@ nav {
   padding: 0 10px;
 }
 
-.nav-scroll {
-  background: black;
-  box-shadow: 0 2px 4px skyblue;
-}
-
 nav .logo {
   color: white;
   user-select: none;
@@ -242,120 +237,65 @@ nav .menu-icon {
   background-color: #f2f2f2;
 }
 
-.buttons {
-  margin-top: 20px;
-  margin-left: 10px;
-}
-
-.buttons a {
-  padding: 10px 15px;
-  font-size: 18px;
-  margin-left: 4px;
-  text-decoration: none;
-  bottom: 10px;
-  user-select: none;
+.request-container {
+  margin: 20px;
+  display: flex;
   color: white;
-  background:
-    linear-gradient(black, black) padding-box,
-    linear-gradient(to right, #00c9ff, #92fe9d) border-box;
-  border-radius: 20px;
-  border: 2px solid transparent;
-  padding: 0 10;
-  cursor: pointer;
+  flex-direction: column;
+  align-items: center;
 }
 
-.buttons a:hover {
-  color: black;
-  background:
-    linear-gradient(to right, #00c9ff, #92fe9d) padding-box,
-    linear-gradient(to right, #00c9ff, #92fe9d) border-box;
-}
-
-.product-container {
-  margin: 20px 10px;
-  padding: 10px;
-  display: grid;
-  justify-content: space-between;
-  grid-template-columns: repeat(auto-fill, 240px);
-  gap: 20px;
-}
-
-.card {
-  box-shadow: 10px 10px 10px -4px skyblue;
-  max-width: 240px;
-  padding: 10px 10px 0px 10px;
-  height: 100%;
+.request-container form {
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+.request-container form select,
+.request-container form input {
+  margin: 10px 0px;
+  padding: 10px;
   border-radius: 20px;
-  overflow: hidden;
-  transition:
-    transform 0.3s,
-    box-shadow 0.3s;
-  transform: rotate(0deg);
-  user-select: none;
+  width: 200%;
 }
 
-.card:hover {
-  transform: translateY(-5px) rotate(0deg);
-  box-shadow: 0 10px 20px black;
-}
-
-.card #name {
-  font-size: 30px;
-  text-align: center;
-}
-
-.card p {
-  margin-bottom: 5px;
-}
-
-.card img {
-  border-radius: 10px;
-  margin-bottom: 20px;
-  height: 150px;
-  width: 100%;
-  border-color: black;
-}
-
-.links {
-  display: flex;
-  justify-content: space-evenly;
-  margin-bottom: 5px;
-}
-
-.links a {
-  text-decoration: none;
-  text-align: center;
-  border: 2px solid transparent;
+.request-container #request-message {
   border-radius: 20px;
-  padding: 5px 15px;
+  padding: 10px;
+  height: 200px;
+  width: 350px;
+}
+
+.request-container button {
+  margin: 10px;
+  padding: 10px 15px;
+  border-radius: 20px;
+  width: 50%;
   color: white;
-  width: 100px;
+  border: double 2px transparent;
+  background-image: linear-gradient(to right, black, black),
+    linear-gradient(to right, #00c9ff, #92fe9d);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
 }
 
-.links #edit {
-  background:
-    linear-gradient(to right, black, black) padding-box,
-    linear-gradient(to right, #373b44, #4286f4) border-box;
+.request-container button:hover {
+  color: black;
+  background-image: linear-gradient(to right, #00c9ff, #92fe9d),
+    linear-gradient(to right, #00c9ff, #92fe9d);
 }
 
-.links #edit:hover {
-  background:
-    linear-gradient(to right, #373b44, #4286f4) padding-box,
-    linear-gradient(to right, #373b44, #4286f4) border-box;
-}
-
-.links #remove {
-  background:
-    linear-gradient(to right, black, black) padding-box,
-    linear-gradient(to right, #c31432, #240b36) border-box;
-}
-
-.links #remove:hover {
-  background:
-    linear-gradient(to right, #c31432, #240b36) padding-box,
-    linear-gradient(to right, #c31432, #240b36) border-box;
+.message p {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  padding: 10px;
+  color: white;
+  border-radius: 5px;
+  z-index: 100;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.5s ease-in-out;
+  opacity: 1;
 }
 
 @keyframes slideIn {
@@ -450,11 +390,5 @@ nav .menu-icon {
   nav .nav-items li {
     line-height: 40px;
     margin: 30px 30px;
-  }
-
-  nav .filter {
-    position: absolute;
-    right: 50px;
-    top: 20px;
   }
 }

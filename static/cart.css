@@ -3,9 +3,10 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   background: linear-gradient(to right, #232526, #414345);
-  color : white;
+  color: white;
   font-family: Sans-Serif;
 }
 
@@ -35,6 +36,7 @@ nav .nav-items {
 nav .nav-items li {
   padding: 0 18px;
 }
+
 nav .nav-items li a {
   font-size: 20px;
   user-select: none;
@@ -65,6 +67,7 @@ nav .nav-buttons {
   display: flex;
   list-style: none;
 }
+
 nav .nav-buttons li {
   padding: 0 5px;
   margin-left: 15px;
@@ -121,6 +124,7 @@ nav .nav-buttons img {
 nav .nav-buttons img:hover {
   transform: scale(0.8);
 }
+
 nav .menu-icon {
   display: none;
   user-select: none;
@@ -129,6 +133,7 @@ nav .menu-icon {
 [v-cloak] {
   display: none;
 }
+
 .search-icon {
   display: block;
 }
@@ -149,6 +154,7 @@ nav .menu-icon {
   align-items: center;
   margin-bottom: 10px;
 }
+
 .floating-screen {
   padding: 20px;
   background-color: linear-gradient(to right, #232526, #414345);
@@ -227,6 +233,7 @@ nav .menu-icon {
 .dropdown-content b {
   font-size: 18px;
 }
+
 .dropdown-content a:hover {
   background-color: #f2f2f2;
 }
@@ -245,41 +252,36 @@ nav .menu-icon {
 }
 
 .container {
-  margin-top : 20px;
-  padding : 20px;
-  overflow-x : auto;
-}
-
-.cart-date {
-  font-size : 16px;
-  font-weight : bold;
-  margin-bottom : 5px;
-  display : flex;
-  justify-content : center;
-  align-items : center;
+  margin-top: 20px;
+  padding: 20px;
+  overflow-x: auto;
 }
 
 table {
   width: 100%;
-  margin-top: 20px;
   color: white;
-  border-spacing : 0;
-  border-collapse : separate;
-  border-radius: 10px;
+  border-spacing: 0;
+  border-collapse: separate;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
   overflow: hidden;
-  border : 2px solid white;
+  border: 2px solid white;
 }
 
 th {
-  padding: 25px;
-  text-align:left;
+  padding: 15px;
+  text-align: left;
   background-color: black;
+  border: solid 1px white;
+  width: auto;
   font-weight: bold;
 }
 
 td {
   padding: 15px;
+  width: auto;
   text-align: left;
+  border: solid 1px white;
 }
 
 tbody {
@@ -293,41 +295,99 @@ tr {
 }
 
 .button-td {
-  display : flex;
-  flex-direction : column;
-  gap : 20px;
-  padding : 10px;
-  border : none;
-}
-tr:nth-child(even) {
-  background-color: #505050;
-}
-tr img{
-  width : 100px;
-  height : 100px;
-}
-.grand-total {
-  font-size : 16px;
-  font-weight : bold;
-  margin-top : 10px;
-  display : flex;
-  justify-content : space-evenly;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  border: none;
+  height: auto;
+  padding: 10px;
 }
 
 
-.button-buy .button-remove {
-  padding : 10px 18px;
-  text-decoration : none;
-  text-align : center;
-  background-color : white;
-  color : black;
-  border-radius : 20px;
-  cursor : pointer;
+tr img {
+  width: 50px;
+  height: 50px;
+  border: none;
+  margin-right: 10px;
+  border-radius: 50%;
 }
+
+tr .image {
+  height: auto;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.button-buy,
+.button-remove {
+  padding: 5px 8px;
+  margin-left: 4px;
+  width: 100px;
+  text-decoration: none;
+  bottom: 10px;
+  user-select: none;
+  color: white;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  text-align: center;
+  cursor: pointer;
+}
+
+.button-buy {
+  background:
+    linear-gradient(black, black) padding-box,
+    linear-gradient(to right, #00c9ff, #00c9ff) border-box;
+}
+
+.button-buy:hover {
+  background: linear-gradient(to right, #00c9ff, #00c9ff) padding-box,
+    linear-gradient(to right, #00c9ff, #00c9ff);
+}
+
+.button-remove {
+  background:
+    linear-gradient(black, black) padding-box,
+    linear-gradient(to right, red, red) border-box;
+}
+
+.button-remove:hover {
+  background:
+    linear-gradient(to right, red, red) padding-box,
+    linear-gradient(to right, red, red) border-box;
+}
+
+.table-head {
+  display: flex;
+  justify-content: space-evenly;
+  margin: 0px;
+  padding: 10px;
+  align-items: center;
+  color: black;
+  font-size: 16px;
+  background-color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.table-head a {
+  padding: 5px;
+}
+
+.table-head img {
+  width: 25px;
+  height: 25px;
+}
+
+.table-head p {
+  font-weight: 600;
+  font-size: 20px;
+}
+
 @keyframes slideIn {
   0% {
     right: 85px;
   }
+
   100% {
     right: 125px;
   }
@@ -337,15 +397,18 @@ tr img{
   0% {
     top: 50px;
   }
+
   100% {
     top: 60px;
   }
 }
+
 @media screen and (max-width: 830px) {
   nav {
     margin: 0px;
     padding: 0px;
   }
+
   nav .nav-buttons {
     padding: 0px;
   }
@@ -355,13 +418,16 @@ tr img{
     top: 10px;
     left: 40px;
   }
+
   nav .nav-buttons svg {
     margin: 0px;
     top: 20px;
   }
+
   nav .nav-buttons li a {
     padding: 6px 6px;
   }
+
   nav .menu-icon img {
     position: absolute;
     top: 20px;
@@ -405,6 +471,7 @@ tr img{
   nav .menu-icon.active img {
     border: 4px solid skyblue;
   }
+
   nav .nav-items li {
     line-height: 40px;
     margin: 30px 30px;

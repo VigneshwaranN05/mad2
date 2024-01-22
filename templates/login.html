@@ -16,15 +16,6 @@
         <h1 class="logo">Grocery</h1>
         <div class='nav-buttons'><a href="/signup">SignUp</a></div>
     </nav>
-    <div class="message">
-        <b>
-            {% if message %}
-            <p v-show="toastIsActive" style="background-color: {{message_color}}">
-                {{message}}
-            </p>
-            {% endif %}
-        </b>
-    </div>
     <!-- container div -->
     <div class="container">
 
@@ -32,30 +23,41 @@
              the login or login form -->
         <div class="slider"></div>
         <div class="btn">
-            <button class="login" style='color : white;'>LogIn</button>
+            <button class="login" style="color:white;">Login</button>
             <button class="login_manager">Manager</button>
         </div>
 
+        <div class="message">
+            <b>
+                {% if message %}
+                <p v-show="toastIsActive" style="background-color: {{message_color}}">
+                    {{message}}
+                </p>
+                {% endif %}
+            </b>
+        </div>
         <!-- Form section that contains the
              login and the login form -->
         <div class="form-section">
             <form action="/login" method="post">
                 <!-- loginform -->
                 <div class="login-box">
-                    <input type="email" autocomplete="off" class="email ele" name="email" placeholder="Email ID"
+
+                    <input type="email" name="email" class="email ele" autocomplete="off" placeholder="Email ID"
                         required>
-                    <input type="password" class="password ele" name="password" placeholder="Password" required>
-                    <button class="clkbtn">LogIn</button>
+                    <input type="password" name="password" class="password ele" id="password" name="password"
+                        placeholder="Password" required>
+                    <button class="clkbtn">login</button>
                 </div>
             </form>
 
             <!-- manger-login form -->
             <form action="/manager_login" method="post">
                 <div class="login-box">
-                    <input type="email" autocomplete="off" class="email ele" name="manager-email"
+                    <input type="email" class="email ele" name="manager-email" autocomplete="off"
                         placeholder="Manager Email ID" required>
                     <input type="password" class="password ele" name="manager-password" placeholder="Password" required>
-                    <button class="clkbtn">LogIn</button>
+                    <button class="clkbtn">login</button>
                 </div>
             </form>
         </div>

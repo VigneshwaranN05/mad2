@@ -4,6 +4,21 @@
   box-sizing: border-box;
 }
 
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: skyblue;
+  border-radius: 20px;
+}
+
 body {
   background: linear-gradient(to right, #232526, #414345);
 
@@ -244,6 +259,7 @@ nav .menu-icon {
 }
 
 .request-container {
+  overflow-x: scroll;
   margin: 20px;
   margin-top: 50px;
 }
