@@ -1,6 +1,9 @@
 from applications.database import db
 from flask_login import UserMixin
+from datetime import datetime
+from pytz import timezone
 
+IST = timezone("Asia/Kolkata")
 
 class User(db.Model, UserMixin):
     __tablename__ = "user"
@@ -55,6 +58,7 @@ class Orders(db.Model):
     quantity = db.Column(db.Float, nullable=False)
     # sold_price -> sold_price per unit to the user
     sold_price = db.Column(db.Float, nullable=False)
+    date = db.Column(db.Date,default=datetime.now(IST) ,nullable=False)
 
 
 class Request(db.Model):
@@ -81,4 +85,4 @@ class Cart(db.Model):
     quantity = db.Column(db.Float, nullable=False)
     # price -> price per unit;
     price = db.Column(db.Float, nullable=False)
-    date = db.Column(db.Date, nullable=False)
+    date = db.Column(db.Date, default=datetime.now(IST),nullable=False)

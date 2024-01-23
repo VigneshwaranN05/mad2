@@ -73,8 +73,8 @@
         </tr>
       </thead>
       <tbody>
+        {% set grand_total = {"total": 0} %}
         {% for order in orders %}
-        {% set grand_total = 0 %}
         <tr>
           <td class="image"><img src="../static/products/{{order.product_id}}.png" alt="">
             {{order.product.name}}</td>
@@ -82,14 +82,16 @@
           <td>₹ {{order.sold_price }}</td>
           <td>₹ {{order.sold_price * order.quantity}}</td>
         </tr>
-        {% set grand_total = grand_total + order.sold_price * order.quantity %}
+        {% set tmp = order.sold_price * order.quantity %}
+        {% if grand_total.update({"total":grand_total.total + tmp}) %}
+        {% endif %}
         {% if loop.last %}
         <div class='table-head'>
           <p>Purchase Id : {{purchase.id}}
           </p>
-          <p>Grand Total: ₹ {{ grand_total }}
+          <p>Grand Total: ₹ {{ grand_total.total }}
           </p>
-          <a href='/car/invoice?id={{purchase.id}}' class='button-buy'> Get Invoice</a>
+          <a href='/history/invoice?id={{purchase.id}}' class='button-buy'> Get Invoice</a>
         </div>
         {% endif %}
         {% endfor %}

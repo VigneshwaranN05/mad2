@@ -1,11 +1,11 @@
 from flask import Blueprint, render_template, url_for, request, session, redirect
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from applications.database import db
 from applications.models import *
 from passlib.hash import pbkdf2_sha256 as passhash
-import json
+import json, pdfkit
 import pandas as pd
-from flask import jsonify
+from flask import Response
 from datetime import timedelta, datetime, date
 import matplotlib.pyplot as plt
 from flask_login import login_user, login_required, logout_user, current_user
@@ -309,23 +309,60 @@ def approve(id):
         return redirect('/login')
 
 @login_required
-@controllers_bp.route('/decline/<int:id>')
+@controllers_bp.route('/decline/<int:id>' , methods=['GET'])
 def decline(id):
     if current_user.is_authenticated and current_user.role == "Admin":
-        if request.method == 'GET' and id is not None:
-            requested = Request.query.get(id)
-            decline_user = User.query.get(requested.request_by)
-            if not decline_user:
-                session['message'] = f'Manager id {requested.request_by} not Found'
-                session['messages_color'] = 'orangered'
-                return redirect('/requests')
-            else:
-                decline_user.approved = 0
-                requested.took_action = True 
+        try:
+            request_made = Request.query.get(id)
+        except Exception as e:
+            session['message'] = f"Error finding request {id}: {str(e)}"
+            session['message_color'] = 'orangered'
+            return redirect('/')
+
+        if request_made is not None:
+            request_type = request_made.request_type
+            
+            if request_type not in ["new_manager" , "new_category" , "remove_item"]:
+                session['message'] = f"Wrong request_type {request_type}"
+                session['message_color'] = "red"
+                return redirect('/request')
+            if request_type == "new_manager":
+                try:
+                    manager_id = int(request_made.request_value)
+                    managerToUpdate = User.query.get(manager_id)
+                    managerToUpdate.approved = False
+                    request_made.took_action = True
+                    db.session.commit()
+                    session['message'] = f"Updated manager {manager_id}"
+                    session['message_color'] = "green"
+                    return redirect('/requests')
+                except (ValueError , TypeError):
+                    session['message'] = f'Error getting the id f{request_made.request_value}'
+                    session['message_color'] = 'orangered'
+                except Exception as e:
+                    session['message'] = f'Error finding manager {manager_id}: {str(e)}'
+                    session['message_color'] = 'orangered'
+                    return redirect('/')
+
+
+            elif request_type == "new_category":
+                category_name = request_made.request_value
+                request_made.took_action = True
                 db.session.commit()
-                session['message'] = f'Updated Manager with id {requested.request_by}'
+                session['message'] = f'Request {id} have been declined'
                 session['message_color'] = 'green'
+                return redirect(request.referrer or '/')
+
+            elif request_type == "remove_item":
+                request_made.took_action = True
+                db.session.commit()
+                session['message'] = f"Request {id} have been declined"
+                session['message_color'] = "green"
                 return redirect('/requests')
+        else:
+            session['message'] = f"Request with id {id} not found."
+            session['message_color'] = 'orangered'
+            return redirect('/')
     else:
         session['message'] = "Login to Continue"
         session['message_color'] = 'orange'
@@ -677,6 +714,36 @@ def search():
         return render_template('search.html',products=searched_products )
     elif request.method == 'GET' :
         return redirect('/')
+
+@controllers_bp.route('/history/invoice' ,methods = ['GET'])
+@login_required
+def invoice():
+    if current_user.is_authenticated and current_user.role == "User":
+        purchase_id = request.args.get('id')
+        if purchase_id :
+            orders = Orders.query.filter_by(purchase_id = purchase_id).all()
+            total_sum = db.session.query(func.sum(Orders.sold_price * Orders.quantity).label('total')).\
+                filter(Orders.purchase_id == purchase_id).scalar()
+            out = render_template('invoice.html' , orders = orders ,
+                                  purchase_id = purchase_id , grand_total = total_sum)
+            options = {
+                "page-size" : "A4",
+                "margin-top" : "10.0cm",
+                "margin-right" : "10.0cm",
+                "margin-left" : "10.0cm",
+                "encoding" : "UTF-8",
+            }
+            pdf = pdfkit.from_string(out , options = options)
+            # pdf = pdfkit.from_string(out)
+            return Response(pdf,mimetype='application/pdf')
+        else:
+            session['message'] = "Unable to get the records"
+            session['message_color'] = "orange"
+            return redirect(request.referrer or '/')
+    else:
+        session['message'] = 'Login to Continue'
+        session['message_color'] = 'orange'
+        return redirect('/login')
 
 @controllers_bp.route('/history',methods=["GET"])
 @login_required

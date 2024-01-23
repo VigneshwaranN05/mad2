@@ -78,7 +78,7 @@
         </tr>
       </thead>
       <tbody>
-        {% set grand_total = 0 %}
+        {% set grand_total = {"total": 0} %}
         {% for product in products %}
         <tr>
           <td class="image"><img src="../static/products/{{product.product_id}}.png" alt="">
@@ -90,12 +90,14 @@
               <a href="/remove_from_cart?id={{product.product_id}}" class='button-remove'>Remove</a>
           </td>
         </tr>
-        {% set grand_total = grand_total + product.price * product.quantity %}
+        {% set tmp = product.price * product.quantity %}
+        {% if grand_total.update({"total":grand_total.total + tmp}) %}
+        {% endif %}
         {% if loop.last %}
         <div class='table-head'>
           <p>Date : {{ cart_date }}
           </p>
-          <p>Grand Total: ₹ {{ grand_total }}
+          <p>Grand Total: ₹ {{ grand_total.total }}
           </p>
           <a href='/checkout?date={{cart_date }}' class=' button-buy'>Buy All </a>
           <a href='/remove_from_cart?date={{cart_date}}'><img src='../static/images/remove.svg'></a>
