@@ -64,5 +64,31 @@ window.onscroll = function () {
   }
 };
 
+const getReport = Vue.createApp({
+  data() {
+    return {
+      showOptions : false,
+      selectedReportType : null,
+    };
+  },
+  methods : {
+    showReportOptions () {
+      this.showOptions = !this.showOptions;
+    },
+    generateReport() {
+      if (this.selectedReportType){
+        window.location.href = `/store/doc?type=${this.selectedReportType}`;
+      }
+      else{
+        console.error('Please chose a report type');
+      }
+    },
+    closeShowOptions() {
+      this.showOptions = false;
+    }
+  },
+});
+
+getReport.mount('.getReport')
 app.mount("#app");
 message.mount(".message");

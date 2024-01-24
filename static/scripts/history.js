@@ -57,3 +57,12 @@ const message = Vue.createApp({
 
 app.mount("#app");
 message.mount(".message");
+window.onscroll = function() {
+    if (window.scrollY > 50) {
+        document.querySelector('.sticky-top').style.backgroundColor = 'black';
+      console.log('Made change');
+    }
+  else{
+    document.querySelector('.sticky-top').style.backgroundColor = '' ;
+  }
+};

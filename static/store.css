@@ -242,6 +242,13 @@ nav .menu-icon {
   background-color: #f2f2f2;
 }
 
+.button-con {
+  display : flex;
+  flex-wrap : wrap;
+  gap : 5px;
+  justify-content : space-between;
+  padding : 10px;
+}
 .buttons {
   margin-top: 20px;
   margin-left: 10px;
@@ -356,6 +363,83 @@ nav .menu-icon {
   background:
     linear-gradient(to right, #c31432, #240b36) padding-box,
     linear-gradient(to right, #c31432, #240b36) border-box;
+}
+
+
+.modal {
+  position : fixed;
+  top : 0;
+  left : 0;
+  width : 100%;
+  height : 100%;
+  background : rgba(255 , 255, 255, 0.8);
+  display : flex;
+  justify-content : center;
+  align-items : center;
+
+}
+
+.closeIcon-con {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.closeIcon-con img {
+  background-color : black;
+  padding : 10px;
+  border-radius : 50%;
+  transition : all 0.2s linear;
+}
+
+.closeIcon-con img:hover {
+  transform: scale(0.8);
+}
+
+.modal-content {
+  background : black;
+  color : white;
+  padding : 30px;
+  gap : 20px;
+  margin : 10%;
+  border-radius : 20px;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  box-shadow : 0 0 10px rgba(0 , 0, 0 , 0.5);
+}
+
+.modal-content select {
+  width : 50%;
+  padding: 5px 10px;
+  border: double 3px transparent;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(to right, #00c9ff, #92fe9d) border-box;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  
+}
+
+
+.modal-content button {
+  width : 200px;
+  color: white;
+  background:
+    linear-gradient(black, black) padding-box,
+    linear-gradient(to right, #00c9ff, #92fe9d) border-box;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  padding: 5px 20px;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  color : black;
+  background : 
+    linear-gradient(to right , #00c9ff , #92fe9d) padding-box,
+    linear-gradient(to right , #00c9ff , #92fe9d) border-box;
 }
 
 @keyframes slideIn {

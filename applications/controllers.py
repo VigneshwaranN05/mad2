@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, url_for, request, session, redirect
-from sqlalchemy import or_, func
+from sqlalchemy import or_, func , desc , asc
+from sqlalchemy.orm import joinedload
 from applications.database import db
 from applications.models import *
 from passlib.hash import pbkdf2_sha256 as passhash
-import json, pdfkit
+import json, pdfkit , csv
 import pandas as pd
+from io import StringIO
 from flask import Response
 from datetime import timedelta, datetime, date
 import matplotlib.pyplot as plt
@@ -15,23 +17,46 @@ controllers_bp = Blueprint('controllers', __name__)
 
 @controllers_bp.route('/', methods=['GET', 'POST'])
 def home():
-    products = Product.query.order_by(Product.id.desc()).all()
     today = date.today()
-
+    products = Product.query
     if current_user.is_authenticated:
         if request.method == "GET":
             message = session.pop('message', None)
             message_color = session.pop('message_color', None)
+            search = request.args.get('search')
+            price_filter= request.args.get('price')
+            date_filter = request.args.get('date')
+            if search:
+                search = search.strip()
+                products = Product.query.filter(Product.name.ilike(f'%{search}%'))
+            if price_filter and price_filter in ['high-to-low' , 'low-to-high']:
+                if price_filter == 'high-to-low':
+                    products = products.order_by(desc(Product.price))
+                elif price_filter == 'low-to-high':
+                    products = products.order_by(asc(Product.price))
+            if date:
+                if date == 'latest':
+                    products = products.order_by(desc(Product.id))
+
+            products = products.all()
             return render_template('home.html', today=today, products=products,
-                                   message=message, message_color=message_color)
+                                       message=message, message_color=message_color,
+                                   search = search, price_filter = price_filter,
+                                   date_filter = date_filter)
+    products = products.all()
     return render_template('home.html', today=today, products=products)
 
 
 @controllers_bp.route('/category', methods=['GET'])
 def category():
     if request.method == 'GET':
-        categories = Categories.query.all()
-        return render_template('category.html', categories=categories)
+        search = request.args.get('search')
+        if search:
+            search = search.strip()
+            categories = Categories.query.filter(Categories.name.ilike(f"%{search}%")).all()
+        else:
+            categories = Categories.query.all()
+        return render_template('category.html', categories=categories  , search = search)
 
 
 @controllers_bp.route("/category_need/<category_need>", methods=['GET', 'POST'])
@@ -131,11 +156,17 @@ def checkout():
                 #Get the product in the cart
                 product_in_cart = Cart.query.filter_by(user_id = user_id , 
                                     product_id = product_id).first()
-                if product_in_cart: 
+                product = Product.query.get(product_id)
+                if not product and product.stock < product_in_cart.quantity:
+                    session['message'] = "Limited Stock"
+                    session['message_color']  = "orange"
+                    return redirect(request.referrer or '/')
+                elif product_in_cart: 
                     new_purchase = Purchases(user_id = user_id)
                     new_order = Orders(purchases=new_purchase , product_id = product_id ,
                                        quantity  = product_in_cart.quantity ,
                                        sold_price = product_in_cart.price)
+                    product.stock -= product_in_cart.quantity
                     db.session.add(new_purchase)
                     db.session.add(new_order)
                     db.session.delete(product_in_cart)
@@ -152,14 +183,19 @@ def checkout():
                 #Get a list of product with the date {cart_date}
                 products_in_cart = Cart.query.filter_by(user_id = user_id,
                                                        date = cart_date).all()
-                print(f"Products by date : {products_in_cart}"        )
                 if products_in_cart:
                     new_purchase = Purchases(user_id = user_id)
                     for product in products_in_cart:
+                        store_product = Product.query.get(product.product_id)
+                        if not store_product and store_product.stock < product.quantity:
+                            session['message'] = 'Limited Stock'
+                            session['message_color']= 'orange'
+                            return redirect(request.referrer or '/')
                         new_order = Orders(purchases = new_purchase ,
                                            product_id  = product.product_id,
                                            quantity = product.quantity,
                                            sold_price = product.price)
+                        store_product.stock -= product.quantity
                         db.session.add(product)
                         db.session.delete(product)
                     db.session.add(new_purchase)
@@ -734,7 +770,6 @@ def invoice():
                 "encoding" : "UTF-8",
             }
             pdf = pdfkit.from_string(out , options = options)
-            # pdf = pdfkit.from_string(out)
             return Response(pdf,mimetype='application/pdf')
         else:
             session['message'] = "Unable to get the records"
@@ -745,12 +780,73 @@ def invoice():
         session['message_color'] = 'orange'
         return redirect('/login')
 
+@controllers_bp.route('/store/doc' , methods = ['GET'])
+@login_required
+def doc():
+    if current_user.is_authenticated and current_user.role == "Manager":
+        user_id = current_user.id
+        orders = Orders.query.join(Product , Orders.product_id == Product.id)\
+                        .options(joinedload(Orders.product))\
+                        .all()
+
+        type = request.args.get('type')
+        if type not in ['csv' , 'pdf']:
+            session['message'] = "Wrong format for doc"
+            session['message_color'] = 'red'
+            return redirect(request.referrer or '/')
+        elif type == 'csv':
+            csv_data = StringIO()
+            csv_writer = csv.writer(csv_data)
+
+            csv_writer.writerow(['Order ID', 'Product ID', 'Product Name', 'Quantity', 'Sold Price', 'Date'])
+    
+            # Write the data rows
+            for order in orders:
+                csv_writer.writerow([
+                    order.id,
+                    order.product_id,
+                    order.product.name,
+                    order.quantity,
+                    order.sold_price,
+                    order.date
+                ])
+
+            # Move the file cursor to the beginning
+            csv_data.seek(0)
+            
+            # Create a Flask response with CSV MIME type
+            response = Response(csv_data.getvalue(), mimetype='text/csv')
+            
+            # Set the filename for download
+            response.headers['Content-Disposition'] = 'attachment; filename=orders_report.csv'
+            
+            return response
+        elif type == 'pdf':
+            out = render_template('doc_pdf.html' , orders = orders,
+                                  today = date.today()) 
+            options = {
+                "page-size" : "A4",
+                "margin-top" : "10.0cm",
+                "margin-right" : "10.0cm",
+                "margin-left" : "10.0cm",
+                "encoding" : "UTF-8",
+            }
+            pdf = pdfkit.from_string(out , options = options)
+            return Response(pdf,mimetype='application/pdf')
+
+        return redirect(request.referrer or '/')
+    else:
+        session['message'] = "Login to continue"
+        session['message_color'] = 'orange'
+        return redirect('/login')
+
 @controllers_bp.route('/history',methods=["GET"])
 @login_required
 def history():
     if current_user.is_authenticated and current_user.role == "User": 
         user = User.query.filter_by(email=current_user.email).first()
-        purchases_user = Purchases.query.filter_by(user_id= user.id).all()
+        purchases_user = Purchases.query.filter_by(user_id= user.id).\
+                    order_by(Purchases.id.desc()).all()
         grouped_orders = {}
         for purchase in purchases_user:
             orders = Orders.query.filter_by(purchase_id = purchase.id).all()

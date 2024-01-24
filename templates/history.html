@@ -20,23 +20,6 @@
     </div>
     <div class="nav-buttons">
       <div id="app" v-cloak>
-        <li class="search-container" id="search" v-cloak>
-          <svg class="search-icon" @click="toggleFloatingScreen" xmlns="http://www.w3.org/2000/svg" width="16"
-            height="16" fill="white" viewBox="0 0 16 16">
-            <path
-              d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-          </svg>
-          <div v-if="floatingScreenIsActive" class="floating-screen-container">
-            <div class="closeIcon-con">
-              <img @click="closeFloatingScreen" src="../static/images/close.svg" />
-            </div>
-            <div class="floating-screen" @click.stop>
-              <input v-model="searchInput" placeholder="Search" /><br />
-              <button @click="search">Submit</button>
-            </div>
-            <br />
-          </div>
-        </li>
         <li class="profile">
           <img src="../static/images/user.svg" id="profile-dropdown-trigger" @click="toggleProfileDropdown" />
           <div class="dropdown-content" id="profile-dropdown" v-if="profileDropdownIsActive">
@@ -101,7 +84,7 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
   <script src="/static/scripts/home.js"></script>
-  <script src="/static/scripts/cart.js"></script>
+  <script src="/static/scripts/history.js"></script>
 </body>
 
 </html>

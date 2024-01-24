@@ -70,6 +70,9 @@
       {% endif %}
     </b>
   </div>
+  {% if search %}
+  <h3 style="margin:  10px; padding: 10px;">Result for '{{search}}'</h3>
+  {% endif %}
   {% if current_user.role == "Admin" %}
   <div class="for-admin">
     <a href="/add_category">Add Category</a>
@@ -85,7 +88,7 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
   <script src="/static/scripts/category.js"></script>
-  <script src="/static/scripts/vuehome.js"></script>
+  <script src="/static/scripts/home.js"></script>
 </body>
 
 </html>

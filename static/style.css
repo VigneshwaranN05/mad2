@@ -5,6 +5,7 @@
 }
 
 body {
+  color : white;
   background: linear-gradient(to right, #232526, #414345);
 
   font-family: Sans-Serif;
@@ -191,7 +192,7 @@ nav .filter {
 
 .floating-screen-container {
   position: fixed;
-  top: 90px;
+  top: 10px;
   left: 0;
   width: 100%;
   height: auto;
@@ -206,10 +207,16 @@ nav .filter {
   margin-bottom: 10px;
 }
 
+.closeIcon-con img {
+  background-color : black;
+  padding : 10px;
+  border-radius : 50%;
+}
+
 .floating-screen {
-  padding: 20px;
-  background-color: linear-gradient(to right, #232526, #414345);
+  padding: 10px;
   border: 2px solid skyblue;
+  background-color : black;
   border-radius: 15px;
   box-shadow: 0 0 10px skyblue;
   text-align: center;
@@ -217,7 +224,7 @@ nav .filter {
 
 .floating-screen input {
   width: 100%;
-  padding: 10px 10px;
+  padding: 5px 10px;
   margin-top: 5px;
   margin-bottom: 15px;
   border-radius: 20px;
@@ -233,7 +240,7 @@ nav .filter {
 .floating-screen button {
   display: block;
   margin: 10px auto;
-  color: white;
+  color: white
   background:
     linear-gradient(black, black) padding-box,
     linear-gradient(to right, #00c9ff, #92fe9d) border-box;
@@ -399,7 +406,7 @@ nav .filter {
   }
 
   100% {
-    right: 125px;
+  right: 125px;
   }
 }
 

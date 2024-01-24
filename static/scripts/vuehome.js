@@ -30,8 +30,20 @@ const app = Vue.createApp({
     },
     search() {
       if (this.searchInput.trim() !== "") {
-        window.location.href =
-          "/search?query=" + encodeURIComponent(this.searchInput);
+        // Get the current URL string
+        let currentUrl = window.location.href;
+
+        // Check if there are existing parameters
+        if (currentUrl.includes("?")) {
+          // Append the search parameter using "&" if other parameters already exist
+          currentUrl += `&search=${encodeURIComponent(this.searchInput)}`;
+        } else {
+          // Append the search parameter using "?" if there are no existing parameters
+          currentUrl += `?search=${encodeURIComponent(this.searchInput)}`;
+        }
+
+        // Navigate to the updated URL
+        window.location.href = currentUrl;
       }
     },
   },

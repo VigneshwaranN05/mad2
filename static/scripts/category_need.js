@@ -31,7 +31,7 @@ const app = Vue.createApp({
     search() {
       if (this.searchInput.trim() !== "") {
         window.location.href =
-          "/search?query=" + encodeURIComponent(this.searchInput);
+          "/?search=" + encodeURIComponent(this.searchInput);
       }
     },
   },

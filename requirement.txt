@@ -7,3 +7,7 @@ passlib
 pandas
 matplotlib
 pdfkit
+celery
+celery
+kombu
+redis

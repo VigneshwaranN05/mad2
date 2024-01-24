@@ -1,0 +1,254 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title>Invoice Template</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /*
+  Common invoice styles. These styles will work in a browser or using the HTML
+  to PDF anvil endpoint.
+*/
+
+    body {
+      font-size: 20px;
+      background-color: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table tr td {
+      padding: 0;
+    }
+
+    table tr td:last-child {
+      text-align: right;
+    }
+
+    .bold {
+      font-weight: bold;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .large {
+      font-size: 1.75em;
+    }
+
+    .total {
+      font-weight: bold;
+      color: #fb7578;
+    }
+
+    .logo-container {
+      margin: 20px 0 70px 0;
+    }
+
+    .invoice-info-container {
+      font-size: 0.875em;
+    }
+
+    .invoice-info-container td {
+      padding: 4px 0;
+    }
+
+    .client-name {
+      font-size: 1.5em;
+      vertical-align: top;
+    }
+
+    .line-items-container {
+      margin: 70px 0;
+      font-size: 0.875em;
+    }
+
+    .line-items-container th {
+      text-align: left;
+      color: brown;
+      border-bottom: 2px solid #ddd;
+      padding: 10px 0 15px 0;
+      font-size: 0.75em;
+      text-transform: uppercase;
+    }
+
+    .line-items-container th:last-child {
+      text-align: right;
+    }
+
+    .line-items-container td {
+      padding: 15px 0;
+    }
+
+    .line-items-container tbody tr:first-child td {
+      padding-top: 25px;
+    }
+
+    .line-items-container.has-bottom-border tbody tr:last-child td {
+      padding-bottom: 25px;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .line-items-container.has-bottom-border {
+      margin-bottom: 0;
+    }
+
+    .line-items-container th.heading-quantity {
+      width: 50px;
+    }
+
+    .line-items-container th.heading-price {
+      text-align: right;
+      width: 100px;
+    }
+
+    .line-items-container th.heading-subtotal {
+      width: 100px;
+    }
+
+    .payment-info {
+      width: 38%;
+      font-size: 0.75em;
+      line-height: 1.5;
+    }
+
+    .footer {
+      margin-top: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .footer-thanks {
+      font-size: 1.125em;
+    }
+
+    .footer-thanks img {
+      display: inline-block;
+      position: relative;
+      top: 1px;
+      width: 16px;
+      margin-right: 4px;
+    }
+
+    .footer-info {
+      float: right;
+      margin-top: 5px;
+      font-size: 0.75em;
+      color: #ccc;
+    }
+
+    .footer-info span {
+      padding: 0 5px;
+      color: black;
+    }
+
+    .footer-info span:last-child {
+      padding-right: 0;
+    }
+
+    .page-container {
+      display: none;
+    }
+
+    .web-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 50px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="web-container">
+    <div class="page-container">
+      Page
+      <span class="page"></span>
+      of
+      <span class="pages"></span>
+    </div>
+
+    <table class="invoice-info-container">
+      <tr>
+        <td rowspan="2" class="client-name">
+          Order Report
+        </td>
+        <td>
+          Admin
+        </td>
+      </tr>
+      <tr>
+        <td>
+          admin@gmail.com
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Manager Name : {{current_user.name}}
+          <br>
+          Manager email : {{current_user.email}}
+        </td>
+        <td></td>
+      </tr>
+    </table>
+
+
+    <table class="line-items-container">
+      <thead>
+        <tr>
+          <th class="heading-quantity">ID</th>
+          <th> Date</th>
+          <th class="heading-description">Product Name</th>
+          <th>Quantity</th>
+          <th>Unit</th>
+          <th class="heading-price">Sold Price</th>
+          <th class='heading-subtotal'>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set grand_total = {"total": 0} %}
+        {% for order in orders %}
+        <tr>
+          <td>{{order.id}}</td>
+          <td>{{order.date}}</td>
+          <td>{{order.product.name}}</td>
+          <td>{{order.quantity}}</td>
+          <td>{{order.product.unit}}</td>
+          <td class="right">₹{{order.sold_price}}</td>
+          <td class="bold">₹{{order.sold_price * order.quantity}}</td>
+        </tr>
+        {% set tmp = order.sold_price * order.quantity %}
+        {% if grand_total.update({"total":grand_total.total + tmp}) %}
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+    <table class="line-items-container has-bottom-border">
+      <thead>
+        <tr>
+          <th>Report On</th>
+          <th>Total Revenue</th>
+        </tr>
+      </thead>
+      <tbody>
+        <td class="large">{{today}}</td>
+        <td class="large total">Rs.{{grand_total.total}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="footer">
+      <div class="footer-thanks">
+        <span>Thank you!</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

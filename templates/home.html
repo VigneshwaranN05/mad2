@@ -48,16 +48,18 @@
         </li>
         <li class="filter">
           <img src="../static/images/filter.svg" id="filter-trigger" @click="toggleFilterOptions" />
-          <form class="filter-options" v-if="filterOptionsIsActive" method="POST">
+          <form class="filter-options" v-if="filterOptionsIsActive" method="GET" action='/'>
             <div class="filter-section">
               <div class="radio-group">
                 <p>Price:</p>
                 <label>
-                  <input type="radio" name="price" value="high-to-low" />High
+                  <input type="radio" name="price" value="high-to-low" {% if price_filter=='high-to-low' %} checked {%
+                    endif %} />High
                   to low
                 </label>
                 <label>
-                  <input type="radio" name="price" value="low-to-high" />Low
+                  <input type="radio" name="price" value="low-to-high" {% if price_filter=='low-to-high' %} checked {%
+                    endif %} />Low
                   to High
                 </label>
               </div>
@@ -67,14 +69,16 @@
               <p>Date:</p>
               <div class="radio-group">
                 <label>
-                  <input type="radio" name="date" value="latest" checked />Latest
+                  <input type="radio" name="date" value="latest" {% if date_filter=='latest' %} checked {% endif
+                    %} />Latest
                 </label>
                 <label>
-                  <input type="radio" name="date" value="oldest" /> Oldest
+                  <input type="radio" name="date" value="oldest" {%if date_filter=='oldest' or not date_filter %}
+                    checked {% endif %} /> Oldest
                 </label>
               </div>
             </div>
-            <button type="button" id="apply-filter">Apply</button>
+            <button type="submit" id="apply-filter">Apply</button>
           </form>
         </li>
         <li class="profile">
@@ -101,6 +105,11 @@
     </b>
     {% endif %}
   </div>
+  {% if search %}
+  <h3 style="margin : 10px ; padding : 10px;">Result for '{{search}}'</h3>
+  {% endif %}
+  {% if date_filter or price_filter %}
+  <h3 style='margin : 5px ; padding: 5px; '>Filtered</h3>{% endif %}
   <div class="card-container">
     {% for product in products %}
     <div class="card">
