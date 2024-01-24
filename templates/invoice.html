@@ -213,8 +213,8 @@
           <td>{{order.quantity}}</td>
           <td>{{order.product.name}}</td>
           <td>{{order.product.unit}}</td>
-          <td class="right">₹{{order.sold_price}}</td>
-          <td class="bold">₹{{order.sold_price * order.quantity}}</td>
+          <td class="right">₹ {{order.sold_price}}</td>
+          <td class="bold">₹ {{order.sold_price * order.quantity}}</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -230,7 +230,7 @@
       </thead>
       <tbody>
         <td class="large">{{orders[0].date}}</td>
-        <td class="large total">Rs.{{grand_total}}</td>
+        <td class="large total">₹ {{grand_total}}</td>
         </tr>
       </tbody>
     </table>
