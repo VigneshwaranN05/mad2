@@ -53,6 +53,9 @@
               <div class="radio-group">
                 <p>Price:</p>
                 <label>
+                  <input type="radio" name="price" {% if not price_filter %} checked {% endif %} />None
+                </label>
+                <label>
                   <input type="radio" name="price" value="high-to-low" {% if price_filter=='high-to-low' %} checked {%
                     endif %} />High
                   to low
@@ -65,16 +68,19 @@
               </div>
             </div>
             <hr />
-            <div class="filter-section">
-              <p>Date:</p>
-              <div class="radio-group">
+            <div class='filter-section'>
+              <p>Expire Date :</p>
+              <div class='radio-group'>
                 <label>
-                  <input type="radio" name="date" value="latest" {% if date_filter=='latest' %} checked {% endif
-                    %} />Latest
+                  <input type="radio" name="expire" value="" {% if not expire_filter %} checked {% endif %}>None
                 </label>
                 <label>
-                  <input type="radio" name="date" value="oldest" {%if date_filter=='oldest' or not date_filter %}
-                    checked {% endif %} /> Oldest
+                  <input type='radio' name='expire' value='soon' {% if expire_filter=='soon' %} checked {% endif
+                    %} />Soonest to Expire
+                </label>
+                <label>
+                  <input type='radio' name='expire' value='latest' {% if expire_filter=='latest' %} checked {% endif
+                    %} />Latest to Expire
                 </label>
               </div>
             </div>
@@ -121,22 +127,23 @@
       {% if product.stock > 0 %}
       <p class="card-items">Stock : {{product.stock}} {{product.unit}}</p>
       {% else %}
-      <p class="card-items">Out of Stock!!!</p>
+      <p class="card-items" style="color : red; font-weight: bold;">Out of Stock!!!</p>
       {% endif %} {% if product.expiry_date >= today %}
       <p class="card-items">
         Expire Date : {{product.expiry_date}}<br />(yyyy-mm-dd)
-      </p>
+      </p>{% else %}
+      <p class="card-items" style="color : red; font-weight: bold;">Expired!!!</p>
+      {% endif %}
       <hr />
       {% if current_user.is_authenticated and current_user.role == "User" %}
+      {% if product.stock > 0 and product.expiry_date >= today %}
       <form method="POST" action="/add_to_cart/{{product.id}}">
         <p>
           <input type="number" name="count" step='any' min="0.1" max="{{product.stock}}" placeholder="Qunatity" />
           <button>Add to cart</button>
         </p>
       </form>
-      {% endif %} {% else %}
-      <p class="card-items">Expired!!!</p>
-      <hr />
+      {% endif %}
       {% endif %}
     </div>
     {% endfor %}

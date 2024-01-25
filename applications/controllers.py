@@ -5,11 +5,9 @@ from applications.database import db
 from applications.models import *
 from passlib.hash import pbkdf2_sha256 as passhash
 import json, pdfkit , csv
-import pandas as pd
 from io import StringIO
 from flask import Response
 from datetime import timedelta, datetime, date
-import matplotlib.pyplot as plt
 from flask_login import login_user, login_required, logout_user, current_user
 
 controllers_bp = Blueprint('controllers', __name__)
@@ -25,7 +23,7 @@ def home():
             message_color = session.pop('message_color', None)
             search = request.args.get('search')
             price_filter= request.args.get('price')
-            date_filter = request.args.get('date')
+            expire_filter = request.args.get('expire')
             if search:
                 search = search.strip()
                 products = Product.query.filter(Product.name.ilike(f'%{search}%'))
@@ -34,15 +32,17 @@ def home():
                     products = products.order_by(desc(Product.price))
                 elif price_filter == 'low-to-high':
                     products = products.order_by(asc(Product.price))
-            if date:
-                if date == 'latest':
-                    products = products.order_by(desc(Product.id))
+            if expire_filter:
+                if expire_filter == 'soon':
+                    products = products.order_by(asc(Product.expiry_date))
+                if expire_filter == 'latest':
+                    products = products.order_by(desc(Product.expiry_date))
 
             products = products.all()
             return render_template('home.html', today=today, products=products,
                                        message=message, message_color=message_color,
                                    search = search, price_filter = price_filter,
-                                   date_filter = date_filter)
+                                   expire_filter= expire_filter)
     products = products.all()
     return render_template('home.html', today=today, products=products)
 
@@ -164,7 +164,8 @@ def checkout():
                 elif product_in_cart: 
                     new_purchase = Purchases(user_id = user_id)
                     new_order = Orders(purchases=new_purchase , product_id = product_id ,
-                                       quantity  = product_in_cart.quantity ,
+                                       product_name  = product.name , owner_id = product.owner_id,
+                                       quantity  = product_in_cart.quantity , unit = product.unit,
                                        sold_price = product_in_cart.price)
                     product.stock -= product_in_cart.quantity
                     db.session.add(new_purchase)
@@ -193,6 +194,9 @@ def checkout():
                             return redirect(request.referrer or '/')
                         new_order = Orders(purchases = new_purchase ,
                                            product_id  = product.product_id,
+                                           product_name = store_product.name,
+                                           owner_id = store_product.owner_id,
+                                           unit = store_product.unit,
                                            quantity = product.quantity,
                                            sold_price = product.price)
                         store_product.stock -= product.quantity
@@ -315,6 +319,10 @@ def approve(id):
                     product_id = int(request_made.request_value)
                     productToRemove = Product.query.filter(Product.id == product_id).first()
 
+                    if productToRemove.cart :
+                        for productInCart in productToRemove.cart:
+                            db.session.delete(productInCart)
+                    
                     if productToRemove:
                         db.session.delete(productToRemove)
                         request_made.took_action = True
@@ -584,16 +592,11 @@ def add_item():
 def new_request():
     if current_user.is_authenticated and current_user.role == "Manager" and current_user.approved:
         if request.method == 'GET':
-            select_args = request.args.get('request-select')
-            input_args = request.args.get('request-input')
-            if select_args not in ["new_category" , "remove_item"]:
-                select_args = None
-
             message = session.pop('message',None)
             message_color = session.pop('message_color',None)
             managers_products= Product.query.filter(Product.owner_id == current_user.id).with_entities(Product.id , Product.name).all()
-            return render_template('new_request.html', products = managers_products, select_args = select_args,
-                                   input_args=input_args, message = message , message_color = message_color)
+            return render_template('new_request.html', products = managers_products,
+                                   message = message , message_color = message_color)
         elif request.method == "POST":
             request_type = request.form.get('request-select')
             request_message = request.form.get('request-message')
@@ -606,7 +609,17 @@ def new_request():
             elif request_type == "remove_item":
                 request_value = request.form.get('product-select')
 
-            if request_value is not None:
+
+            #check for existing request
+            existing_request = Request.query.filter_by(request_by = current_user.id ,
+                                                       request_type = request_type , 
+                                                       request_value = request_value).first()
+
+            if existing_request :
+                session['message'] = "Request was already made"
+                session['message_color'] = 'orange'
+                return redirect(request.referrer or '/')
+            if request_value is not None and existing_request is None:
                 newRequest = Request(request_by = current_user.id , request_type = request_type,
                                  request_value = request_value , took_action = False, 
                                  request_message = request_message)
@@ -619,18 +632,9 @@ def new_request():
         return redirect('/login')
 
 
-
-
-
-
-
-@controllers_bp.route('/manager_signup', methods=['GET' , 'POST'])
+@controllers_bp.route('/manager_signup', methods=['POST'])
 def manager_signup():
-    if request.method == "GET":
-        message = session.pop('message',None)
-        message_color = session.pop('message_color',None)
-        return render_template('manager_signup.html',message=message , message_color = message_color)
-    elif request.method == 'POST':
+    if request.method == 'POST':
         manager_name = request.form['manager-name']
         manager_email = request.form['manager-email'] 
         password = request.form['manager-password']
@@ -644,7 +648,7 @@ def manager_signup():
             new_request = Request(request_by = new_manager.id ,request_type= "new_manager", took_action = False, request_message = "New Manager signed up" , request_value = new_manager.id )
             db.session.add(new_request)
             db.session.commit()
-            session['message'] = "Acccount created successfully!!"
+            session['message'] = "Account created successfully!!"
             session['message_color'] = 'green'
             return redirect('/login')
         else:
@@ -742,15 +746,6 @@ def cart():
         return render_template("cart.html" ,userCartByDate = userCartByDate,
                                message = message , message_color = message_color )
 
-@controllers_bp.route('/search',methods=['GET','POST'])
-def search():
-    if current_user.is_authenticated and request.method == 'POST':
-        query = request.form['query']
-        searched_products = Product.query.filter(or_(Product.name.ilike(f"%{query}%"))).all()
-        return render_template('search.html',products=searched_products )
-    elif request.method == 'GET' :
-        return redirect('/')
-
 @controllers_bp.route('/history/invoice' ,methods = ['GET'])
 @login_required
 def invoice():
@@ -785,9 +780,7 @@ def invoice():
 def doc():
     if current_user.is_authenticated and current_user.role == "Manager":
         user_id = current_user.id
-        orders = Orders.query.join(Product , Orders.product_id == Product.id)\
-                        .options(joinedload(Orders.product))\
-                        .all()
+        orders = Orders.query.filter(Orders.owner_id == user_id).all()
 
         type = request.args.get('type')
         if type not in ['csv' , 'pdf']:
@@ -805,7 +798,7 @@ def doc():
                 csv_writer.writerow([
                     order.id,
                     order.product_id,
-                    order.product.name,
+                    order.product_name,
                     order.quantity,
                     order.sold_price,
                     order.date

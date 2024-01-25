@@ -102,5 +102,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
   hiddenSelect.addEventListener("change", updateRequestMessage);
 
-  updateRequestMessage();
 });

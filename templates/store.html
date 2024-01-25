@@ -63,25 +63,25 @@
   <div class="product-container">
     {% for product in products %}
     <div class="card">
-      <img class="image" id="productImage" src="../static/products/{{product.id}}.png" />
-      <p class="card-items" id="name" style="font-weight: bold">
-        {{ product.name }}
+      <img class="image" src="../static/products/{{product.id}}.png" />
+      <h3 style="text-align: center; font-weight: bold;">{{product.name}}</h3>
+      <p class="card-items" style="font-weight: bold">
+        Price : {{product.price}} per {{product.unit}}
       </p>
-      <p class="card-items" id="pricePerUnit">
-        Price: {{ product.price }} per {{product.unit}}
-      </p>
-      <p class="card-items" id="stock">
-        Stock: {{product.stock}} {{product.unit}}
-      </p>
-      <p class="card-items" id="category">
-        Category: {{product.categories.name }}
-      </p>
-      <p class="card-items" id="expire-date">
-        Expire Date: {{product.expiry_date}}<br />(yyyy-mm-dd)
-      </p>
+      {% if product.stock > 0 %}
+      <p class="card-items">Stock : {{product.stock}} {{product.unit}}</p>
+      {% else %}
+      <p class="card-items" style="font-weight: bold;color : red;">Out of Stock!!!</p>
+      {% endif %} {% if product.expiry_date >= today %}
+      <p class="card-items">
+        Expire Date : {{product.expiry_date}}<br />(yyyy-mm-dd)
+      </p>{% else %}
+      <p class="card-items" style="color : red ; font-weight : bold">Expired!!!</p>
+      {% endif %}
+      <hr />
       <div class="links">
         <a id="edit" href="/edit_item/{{product.id}}">Edit</a>
-        <a id="remove" href="/new_request?request-select=remove_item&request-input={{product.id}}">Remove</a>
+        <a id="remove" href="/new_request">Remove</a>
       </div>
     </div>
     {% endfor %}

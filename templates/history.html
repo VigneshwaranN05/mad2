@@ -60,8 +60,8 @@
         {% for order in orders %}
         <tr>
           <td class="image"><img src="../static/products/{{order.product_id}}.png" alt="">
-            {{order.product.name}}</td>
-          <td>{{order.quantity}} {{order.product.unit}}(s)</td>
+            {{order.product_name}}</td>
+          <td>{{order.quantity}} {{order.unit}}(s)</td>
           <td>₹ {{order.sold_price }}</td>
           <td>₹ {{order.sold_price * order.quantity}}</td>
         </tr>

@@ -2,12 +2,7 @@ flask
 sqlalchemy
 flask_sqlalchemy
 flask_login
+pytz
 flask_restful
 passlib
-pandas
-matplotlib
 pdfkit
-celery
-celery
-kombu
-redis

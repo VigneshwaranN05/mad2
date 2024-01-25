@@ -14,6 +14,7 @@ class User(db.Model, UserMixin):
     role = db.Column(db.String(10), nullable=False)
     approved = db.Column(db.Boolean, nullable=False, default=False)
     purchase = db.relationship("Purchases", backref='user', lazy=True)
+    orders = db.relationship("Orders" , backref='user' , lazy = True)
     cart = db.relationship('Cart', backref='user', lazy=True)
     products = db.relationship("Product", backref='user', lazy=True)
     request = db.relationship("Request", backref='user', lazy=True)
@@ -37,7 +38,6 @@ class Product(db.Model):
     stock = db.Column(db.Float, nullable=False)
     price = db.Column(db.Float, nullable=False)
     expiry_date = db.Column(db.Date, nullable=False)
-    orders = db.relationship("Orders", backref='product', lazy=True)
     cart = db.relationship("Cart", backref="product", lazy=True)
 
 
@@ -53,8 +53,10 @@ class Orders(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     purchase_id = db.Column(db.Integer, db.ForeignKey(
         'purchases.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey(
-        'product.id'), nullable=False)
+    product_id = db.Column(db.Integer, nullable=False)
+    product_name = db.Column(db.Integer, nullable =False)
+    owner_id = db.Column(db.Integer , db.ForeignKey('user.id') , nullable = False)
+    unit = db.Column(db.String(8) , nullable = False)
     quantity = db.Column(db.Float, nullable=False)
     # sold_price -> sold_price per unit to the user
     sold_price = db.Column(db.Float, nullable=False)

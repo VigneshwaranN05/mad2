@@ -93,22 +93,23 @@
       {% if product.stock > 0 %}
       <p class="card-items">Stock : {{product.stock}} {{product.unit}}</p>
       {% else %}
-      <p class="card-items">Out of Stock!!!</p>
+      <p class="card-items" style="font-weight: bold;color : red;">Out of Stock!!!</p>
       {% endif %} {% if product.expiry_date >= today %}
       <p class="card-items">
         Expire Date : {{product.expiry_date}}<br />(yyyy-mm-dd)
-      </p>
+      </p>{% else %}
+      <p class="card-items" style="color : red ; font-weight : bold">Expired!!!</p>
+      {% endif %}
       <hr />
       {% if current_user.is_authenticated and current_user.role == "User" %}
-      <form action='/add_to_cart/{{product.id}}' method="POST">
+      {% if product.stock > 0 and product.expiry_date >= today %}
+      <form method="POST" action="/add_to_cart/{{product.id}}">
         <p>
-          <input type="number" name="count" min="0.1" max="{{product.stock}}" step="any" placeholder="Qunatity" />
+          <input type="number" name="count" step='any' min="0.1" max="{{product.stock}}" placeholder="Qunatity" />
           <button>Add to cart</button>
         </p>
       </form>
-      {% endif %} {% else %}
-      <p class="card-items">Expired!!!</p>
-      <hr />
+      {% endif %}
       {% endif %}
     </div>
     {% endfor %}
